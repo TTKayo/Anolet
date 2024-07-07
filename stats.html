@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito&family=Poppins:wght@500&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+        <link rel="icon" type="image/x-icon" href="faviconimg.png">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <img  id="profile-picture" src="" alt="Profile Picture" style="display: none; margin-left: 350px; margin-top: 100px;">
+<script src="stats.js"></script>
+     <style>
+               ::placeholder {
+                color: rgb(160, 255, 203);
+                opacity: 1;
+            }
+            .action_container {
+                position: absolute;
+                background-color: mediumseagreen;
+                border-radius: 8px;
+                width:40vw;
+                height: 25vh;
+                left: 35%;
+                top: 30%;
+                box-shadow: inset 0 -8px rgba(0, 0, 0, .2), 0 0 4px rgba(0, 0, 0, .15);
+                font-family: Titan One;
+                color: white;
+                font-size: 50px;
+                text-align: center;
+                padding-top: 5vh;
+                padding-bottom: 5vh;
+            }
+            .ban_container {
+                text-align: center;
+                display: table-column;
+                vertical-align: center;
+                font-family: Nunito, sans-serif;
+                background-color: firebrick;
+                font-weight: 800;
+                font-size: 10px;
+                color: #fff;
+                position: absolute;
+                width: 5vw;
+                height: 3vh;
+                border-radius: 8px;
+                box-shadow: inset 0 -4px rgba(0, 0, 0, .2), 0 0 8px rgba(0, 0, 0, .25);
+                padding-top: 1vh;
+                transition: box-shadow 0.3s ease, height 0.3s ease;
+                left: 10%;
+                top: 60%;
+            }
+            .ban_container:hover {
+                background-color: rgb(207, 41, 41);
+            }
+            .blacklist_container {
+                text-align: center;
+                display: table-column;
+                vertical-align: center;
+                font-family: Nunito, sans-serif;
+                background-color: #303030;
+                font-weight: 800;
+                font-size: 25px;
+                color: #fff;
+                position: absolute;
+                width: 12vw;
+                height: 6vh;
+                border-radius: 8px;
+                box-shadow: inset 0 -4px rgba(0, 0, 0, .2), 0 0 8px rgba(0, 0, 0, .25);
+                padding-top: 1vh;
+                transition: box-shadow 0.3s ease, height 0.3s ease;
+                left: 35%;
+                top: 60%;
+            }
+            .blacklist_container:hover {
+                background-color: #393939;
+            }
+            .other_container {
+                text-align: center;
+                display: table-column;
+                vertical-align: center;
+                font-family: Nunito, sans-serif;
+                background-color: orange;
+                font-weight: 800;
+                font-size: 25px;
+                color: #fff;
+                position: absolute;
+                width: 8vw;
+                height: 6vh;
+                border-radius: 8px;
+                box-shadow: inset 0 -4px rgba(0, 0, 0, .2), 0 0 8px rgba(0, 0, 0, .25);
+                padding-top: 1vh;
+                transition: box-shadow 0.3s ease, height 0.3s ease;
+                left: 70%;
+                top: 60%;
+            }
+            .other_container:hover {
+                background-color: rgb(255, 178, 36);
+            }
+            .choose_user {
+                position: absolute;
+                background-color: mediumseagreen;
+                border-radius: 8px;
+                width:40vw;
+                height: 30vh;
+                left: 35%;
+                top: 30%;
+                box-shadow: inset 0 -8px rgba(0, 0, 0, .2), 0 0 4px rgba(0, 0, 0, .15);
+                font-family: Titan One;
+                color: white;
+                font-size: 50px;
+                text-align: center;
+                padding-top: 5vh;
+                padding-bottom: 5vh;
+                box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.2);
+                display: none;
+                transition: padding-bottom 0.5s;
+            }
+            .select_user {
+                align-items: center;
+                border: 2px solid #6eebb9;
+                border-radius: 6px;
+                display: flex;
+                flex-direction: row;
+                height: 45px;
+                margin: auto auto 15px;
+                position: absolute;
+                left: 10%;
+                width: 80%;
+                top: 20%;
+            }
+            .select_reason {
+                align-items: center;
+                border: 2px solid #6eebb9;
+                border-radius: 6px;
+                display: flex;
+                flex-direction: row;
+                height: 45px;
+                margin: auto auto 15px;
+                position: absolute;
+                left: 10%;
+                width: 80%;
+                top: 45%;
+            }
+            .user {
+                background-color: mediumseagreen;
+                border: none;
+                color: #fff;
+                height: 45px;
+                margin: auto auto 15px;
+                width: 95%;
+                height: 90%;
+                font-family: Nunito, sans-serif;
+                font-size: 15px;
+                padding-top: 2.25px;
+                padding-bottom: 2.25px;
+                font-weight: 575;
+            }
+            .user:focus {
+                outline: none;
+                border-color: transparent;
+            }
+            .reason {
+                background-color: mediumseagreen;
+                border: none;
+                color: #fff;
+                height: 45px;
+                margin: auto auto 15px;
+                width: 95%;
+                height: 90%;
+                font-family: Nunito, sans-serif;
+                font-size: 15px;
+                padding-top: 2.25px;
+                padding-bottom: 2.25px;
+                font-weight: 575;
+            }
+            .reason:focus {
+                outline: none;
+                border-color: transparent;
+            }
+            .ban_submit {
+                text-align: center;
+                display: table-column;
+                vertical-align: center;
+                font-family: Nunito, sans-serif;
+                background-color: firebrick;
+                font-weight: 800;
+                font-size: 20px;
+                color: #fff;
+                position: absolute;
+                width: 6.4vw;
+                height: 5.5vh;
+                border-radius: 8px;
+                left: 38%;
+                top: 72.5%;
+                box-shadow: inset 0 -4px rgba(0, 0, 0, .2), 0 0 4px rgba(0, 0, 0, .15);
+                padding-top: 1vh;
+            }
+            .ban_submit:hover {
+                background-color: rgb(207, 41, 41);
+                box-shadow: 0px -2px rgba(43, 39, 39, 0.2) inset, 0px 0px 4px rgba(0, 0, 0, 0.5);
+                transition-duration: 0.2s;
+                height: 5vh;
+                top: 73.5%;
+            }
+            .fill_out_all {
+                align-items: center;
+                border: 2px solid #ce1313;
+                border-radius: 6px;
+                margin: auto auto 20px;
+                width: 80%;
+                position: absolute;
+                font-family: Nunito, sans-serif;
+                top: 35vh;
+                color: #fff;
+                text-shadow: red 5px 0 10px;
+                left: 10%;
+                margin-top: 9%;
+                padding-top: 1vh;
+                padding-bottom: 1vh;
+                padding-right: 2vh;
+                display: none;
+            }
+
+        img{
+            width: 100px;
+        }
+        </style>
+         
+         <div style="display: none;" class="blooks_great_container">
+            <div id="unlocked-images" ></div>
+            <img style="margin-left: 400px;" id="profile-picture" src="" alt="Profile Picture">
+
+            <div class="styles__setTopBackground___342Wr-camelCase"></div>
+            <div class="setblook_container">
+            </div>
+        </div>
+        
+
+  
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito&family=Poppins:wght@500&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <title>Stats | Anolet</title>
+
+       <style>
+            .bg_img {
+                position: absolute;
+                width: 200%;
+                height: 200%;
+                top: 50%;
+                left: 50%;
+                z-index: -9999;
+                background-size: 550px;
+                background-position: -100px -100px;
+                background-image: url("https://ac.blooket.com/dashboard/assets/BlookCheckers-BykpA7vd.png");
+                transform: translate(-50%, -50%) rotate(15deg);
+                opacity: 0.1;
+            }
+        </style>
+    </head>
+    <body style="background-color: #336c4c; overflow: hidden;">
+        <img alt="Blooks Background" class="bg_img">
+        <div class="side_bar">
+            <div class="anolet_text" id="container">
+                <a class="logo_link" style="color:#fff; text-decoration: none;" href="index.html">Anolet</a>
+            </div>
+            <a class="page_button_selected"></a>
+            <div class="stats_selector">
+                <div class="stats_text">
+                    <a href="stats.html" style="color:#fff; text-decoration: none;" class="link">Stats</a>
+                </div>
+                <svg aria-hidden="true" focusable="false" class="stats_icon" role="img" viewBox="0 0 512 512"><path fill="white" d="M32 32c17.7 0 32 14.3 32 32V400c0 8.8 7.2 16 16 16H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H80c-44.2 0-80-35.8-80-80V64C0 46.3 14.3 32 32 32zm96 96c0-17.7 14.3-32 32-32l192 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-192 0c-17.7 0-32-14.3-32-32zm32 64H288c17.7 0 32 14.3 32 32s-14.3 32-32 32H160c-17.7 0-32-14.3-32-32s14.3-32 32-32zm0 96H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H160c-17.7 0-32-14.3-32-32s14.3-32 32-32z"></path></svg>
+            </div>
+            <div class="leaderboard_selector">
+                <div class="leaderboard_text">
+                    <a href="leaderboard.html" style="color:#fff; text-decoration: none;" class="link">Leaderboard</a>
+                </div>
+                <svg aria-hidden="true" focusable="false" class="leaderboard_icon" role="img" viewBox="0 0 576 512"><path fill="white" d="M400 0H176c-26.5 0-48.1 21.8-47.1 48.2c.2 5.3 .4 10.6 .7 15.8H24C10.7 64 0 74.7 0 88c0 92.6 33.5 157 78.5 200.7c44.3 43.1 98.3 64.8 138.1 75.8c23.4 6.5 39.4 26 39.4 45.6c0 20.9-17 37.9-37.9 37.9H192c-17.7 0-32 14.3-32 32s14.3 32 32 32H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H357.9C337 448 320 431 320 410.1c0-19.6 15.9-39.2 39.4-45.6c39.9-11 93.9-32.7 138.2-75.8C542.5 245 576 180.6 576 88c0-13.3-10.7-24-24-24H446.4c.3-5.2 .5-10.4 .7-15.8C448.1 21.8 426.5 0 400 0zM48.9 112h84.4c9.1 90.1 29.2 150.3 51.9 190.6c-24.9-11-50.8-26.5-73.2-48.3c-32-31.1-58-76-63-142.3zM464.1 254.3c-22.4 21.8-48.3 37.3-73.2 48.3c22.7-40.3 42.8-100.5 51.9-190.6h84.4c-5.1 66.3-31.1 111.2-63 142.3z"></path></svg>
+            </div>
+            <div class="blooks_selector">
+                <div class="blooks_text">
+                    <a href="blooks.html" style="color:#fff; text-decoration: none;" class="link">Blooks</a>
+                </div>
+                <svg aria-hidden="true" focusable="false" class="blooks_icon" role="img"viewBox="0 0 512 512"><path fill="white" d="M176 56V96H336V56c0-4.4-3.6-8-8-8H184c-4.4 0-8 3.6-8 8zM128 96V56c0-30.9 25.1-56 56-56H328c30.9 0 56 25.1 56 56V96v32V480H128V128 96zM64 96H96V480H64c-35.3 0-64-28.7-64-64V160c0-35.3 28.7-64 64-64zM448 480H416V96h32c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64z"></path></svg>
+            </div>
+            <div class="market_selector">
+                <div class="market_text">
+                    <a href="market.html" style="color:#fff; text-decoration: none;" class="link">Market</a>
+                </div>
+                <svg aria-hidden="true" focusable="false" class="market_icon" role="img"viewBox="0 0 576 512"><path fill="white" d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0H109.6C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9l-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3V384H128V250.6c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3V384v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V384 252.6c-4 1-8 1.8-12.3 2.3z"></path></svg>
+            </div>
+            <div class="puzzles_selector">
+                <div class="puzzles_text">
+                    <a href="chat.html" style="color:#fff; text-decoration: none;" class="link">Chat</a>
+                </div>
+                <svg fill="#FFFFFF" viewBox="0 0 24 24" class="puzzles_icon"><path d="M 11.5 0 C 10.119 0 9 1.119 9 2.5 L 9 4 L 5 4 C 3.895 4 3 4.895 3 6 L 3 9 C 3 9.552 3.448 10 4 10 L 4.3574219 10 C 5.6654219 10 6.8553281 10.941188 6.9863281 12.242188 C 7.1363281 13.739187 5.966 15 4.5 15 L 4 15 C 3.448 15 3 15.448 3 16 L 3 19 C 3 20.105 3.895 21 5 21 L 8 21 C 8.552 21 9 20.552 9 20 L 9 19.642578 C 9 18.334578 9.9411875 17.144672 11.242188 17.013672 C 12.739187 16.863672 14 18.034 14 19.5 L 14 20 C 14 20.552 14.448 21 15 21 L 18 21 C 19.105 21 20 20.105 20 19 L 20 15 L 21.5 15 C 22.881 15 24 13.881 24 12.5 C 24 11.119 22.881 10 21.5 10 L 20 10 L 20 6 C 20 4.895 19.105 4 18 4 L 14 4 L 14 2.5 C 14 1.119 12.881 0 11.5 0 z"/></svg>
+            </div>
+            <div class="panel_selector">
+                <div class="panel_text">
+
+                                                                     <a href="Rooms.html" style="color:#fff; text-decoration: none;" class="link">Trading Rooms</a>
+
+                <i class="fas fa-wrench panel_icon"></i>
+            </div>
+            <div>
+
+            <a href="login.html" onclick="clearCookies()"><button class="logout_button">Logout</button></a>
+            </div>
+
+                                                                                     
+ <div style=" margin-left: 300px; display: none;">
+        <label for="usernameInput">Enter Username: </label>
+        <input type="text" id="usernameInput" />
+        <button onclick="viewProfile()">View Profile</button>
+    </div>
+            
+            </button>
+            <div class="token_container">
+                </div>
+            </div>
+                <!-- <div class="username_display">
+                </div> -->
+       
+            <!-- <div style="color: rgb(255, 255, 255);" class="username_name">Username</div> -->
+
+            <div style="margin-right: 200px;"  class="stats_banner">
+                <div style="text-align: center; " class="headerName" id="username">Username</div>
+                <p style=" margin-right: 50px;" class="role_display" id="roles"></p>
+
+            </div>
+        </div>
+                <img  id="profile-picture" src="" alt="Profile Picture" style="display: none; margin-left: px;">
+
+            <div style=" width: 300xp;" class="stats_container">
+
+            <div  class="stats_elements" id="packs_opened">
+                Tokens <div id="tokens"></div>
+            </div>
+            <div class="stats_elements" id="blooks_unlocked">
+                Blooks Unlocked: 0
+            </div>
+            <div class="stats_elements" id="puzzles_solved">
+                Puzzles Solved: 0
+            </div>
+  
+        </div>
+            <a href="Plus.html"><div  style=" margin-top: -250px; margin-left: 325px;" class="ban_container" >Store</div></a>
+            <a href="AddInfo.html"><div  style=" margin-top: -250px; margin-left: 430px;" class="ban_container" >claim tokens</div></a>
+           
+        <script>
+          // Select the element by its ID
+var usernameElement = document.getElementById("username");
+
+// Set its text-align property to center
+usernameElement.style.textAlign = "center";
+
+// Remove the margin-left property to ensure it's centered properly
+usernameElement.style.marginLeft = "auto";
+usernameElement.style.marginRight = "auto";
+
+                  document.addEventListener("DOMContentLoaded", function() {
+      
+        
+    </body>
+</html>

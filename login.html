@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito&family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <title>Login | Anolet</title>
+    <style>
+        .topBar {
+            position: absolute;
+            width: 100vw;
+            height: 55px;
+            background-color: #3cb383;
+            left: 0;
+            top: 0;
+            box-shadow: inset 0 -6px #0003;
+        }
+        .logo_link {
+            position: absolute;
+            color: white;
+            cursor: pointer;
+            font-family: Titan One, sans-serif;
+            font-size: 40px;
+            line-height: 49px;
+            margin-left: 40px;
+            top: 0vh;
+            outline: none;
+            text-align: left;
+            text-decoration: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .logo_link1 {
+            color: white;
+            top: 0vh;
+        }
+        .logo_link1:hover {
+            color: white;
+        }
+        .signUp_link {
+            color: #fff;
+            cursor: pointer;
+            font-family: "Nunito", sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 49px;
+            outline: none;
+            padding-right: 40px;
+            text-align: right;
+            text-decoration: underline;
+            position: absolute;
+            left: 90vw;
+            top: 0vh;
+        }
+        .signUp_link:hover {
+            color: #fff;
+            cursor: pointer;
+            font-family: "Nunito", sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 49px;
+            outline: none;
+            padding-right: 40px;
+            text-align: right;
+            text-decoration: underline;
+            position: absolute;
+            left: 90vw;
+        }
+        .login_container {
+            background-color:#3cb383;
+            border-radius: 7px;
+            box-shadow: inset 0 -7px #0003, 0 0 4px #00000026;
+            box-sizing: border-box;
+            left: 50%;
+            max-width: 420px;
+            height: 414px;
+            padding-bottom: 7px;
+            position: absolute;
+            text-align: center;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            text-align: center;
+        }
+        .login_header {
+            font-family: "Titan One", sans-serif;
+            color: #fff;
+            font-size: 55px;
+            margin: 10px 20px 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 40px;
+        }
+        .login_username {
+            align-items: center;
+            border: 2px solid #6eebb9;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: row;
+            height: 45px;
+            margin: auto auto 15px;
+            max-width: 330px;
+            width: 80%;
+            position: absolute;
+            top: 35%;
+            left: 10%;
+        }
+        .login_username_input {
+            align-items: center;
+            border: none;
+            background-color: #3cb383;
+            color: #fff;
+            display: flex;
+            flex-direction: row;
+            font-family: Nunito, sans-serif;
+            font-size: 17px;
+            height: 35px;
+            margin: 5px 2px 5px 50px;
+            max-width: 260px;
+            outline: none;
+            text-align: left;
+            width: calc(100% - 35px);
+            position: absolute;
+        }
+        .login_password {
+            align-items: center;
+            border: 2px solid #6eebb9;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: row;
+            height: 45px;
+            margin: auto auto 15px;
+            max-width: 330px;
+            width: 80%;
+            position: absolute;
+            top: 50%;
+            left: 10%;
+        }
+        .login_password_input {
+            align-items: center;
+            border: none;
+            background-color: var(--colors-primary);
+            color: #fff;
+            display: flex;
+            flex-direction: row;
+            font-family: Nunito, sans-serif;
+            font-size: 17px;
+            height: 35px;
+            margin: 5px 2px 5px 50px;
+            max-width: 260px;
+            outline: none;
+            text-align: left;
+            width: calc(100% - 35px);
+            position: absolute;
+        }
+        .user_icon {
+            margin-left: 15px;
+            position: absolute;
+        }
+        .login_submit {
+            background-color: #3cb383;
+            border-color: #6eebb9;
+            border-radius: 6px;
+            border-style: solid;
+            color: #fff;
+            cursor: pointer;
+            display: block;
+            font-family: Nunito, sans-serif;
+            font-size: 22px;
+            top: 39vh;
+            left: 11vw;
+            position: absolute;
+            height: 45px;
+            margin: auto auto 20px;
+            outline: none;
+            padding: 5px 20px;
+            text-align: center;
+            transition: all .2s cubic-bezier(.39, .5, .15, 1.36);
+        }
+        .bottom_login_text {
+            font-family: "Nunito", sans-serif;
+            color: white;
+            position: absolute;
+            left: 5vw;
+            top: 48vh;
+        }
+        .bg_img {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: 50%;
+            left: 50%;
+            z-index: -9999;
+            background-size: 550px;
+            background-position: -100px -100px;
+            background-image: url("https://ac.blooket.com/dashboard/assets/BlookCheckers-BykpA7vd.png");
+            transform: translate(-50%, -50%) rotate(15deg);
+            opacity: 0.1;
+        }
+        .bottom_fade {
+            bottom: 0;
+            left: 0;
+            position: absolute;
+            width: 100vw;
+            height: 15vh;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+        }
+        .badge-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .badge {
+            width: 50px;
+            height: 50px;
+            margin: 0 5px;
+        }
+    </style>
+    <link rel="icon" type="image/x-icon" href="favicon_img.png">
+</head>
+<body style="background-color: #336c4c; overflow: hidden;">
+    <img alt="Blooks Background" class="bg_img">
+    <div class="topBar"></div>
+    <div>
+        <a class="logo_link logo_link1" href="index.html">Anolet</a>
+    </div>
+    <div>
+        <a class="signUp_link" href="sign up.html">Sign up</a>
+    </div>
+    <div class="login_container">
+        <div class="loginForm">
+            <div class="login_header">Sign in</div>
+            <form onsubmit="event.preventDefault(); login();">
+                <div class="login_username">
+                    <svg aria-hidden="true" class="user_icon" focusable="false" data-prefix="fas" width="22px" height="45" data-icon="user" role="img" viewBox="0 0 448 512"></svg>
+                    <input id="username" type="text" class="login_username_input" placeholder="Username" maxlength="30">
+                </div>
+                <div class="login_password">
+                    <svg aria-hidden="true" class="user_icon" focusable="false" data-prefix="fas" width="22px" height="45" data-icon="user" role="img" viewBox="0 0 448 512">
+                        <path fill="#2e8461" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                    </svg>
+                    <input type="password" id="password" class="login_password_input" placeholder="Password" maxlength="16">
+                </div>
+                <button style="display: none;" type="submit" class="login_submit">sign up</button>
+            </form>
+
+<div>
+    <button onclick="login()" class="login_submit">login</button>
+
+</div>
+
+
+
+
+            <div class="bottom_login_text">
+                 dont have an account?
+                <a class="logo_link1" href="sign up.html">Sign up</a> instead.
+            </div>
+        </div>
+        <p id="error-message" style="margin-top: 225px; margin-right: -25px; color: red; border-color: red; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 17px;"></p>
+    </div>
+    
+    <div class="bottom_fade"></div>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+      authDomain: "cosmik-7c124.firebaseapp.com",
+      databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
+      projectId: "cosmik-7c124",
+      storageBucket: "cosmik-7c124.appspot.com",
+      messagingSenderId: "412506429662",
+      appId: "1:412506429662:web:9ca3e17199297df7384a4f",
+      measurementId: "G-R7K0LTHCK3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const firestore = firebase.firestore();
+
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        function getCookie(name) {
+            const cname = name + "=";
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(cname) == 0) {
+                    return c.substring(cname.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function createAccount() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            var profilePicture = "Owner.png";
+
+            if (/[^a-zA-Z0-9]/.test(username)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Username',
+                    text: 'Username can only contain letters and numbers.'
+                });
+                return;
+            }
+
+            firebase.auth().createUserWithEmailAndPassword(username + "@example.com", password)
+                .then((userCredential) => {
+                    var user = userCredential.user;
+                    firestore.collection("users").doc(username).set({
+                        badges: [],
+                        tokens: 0,
+                        roles: [],
+                        accepted: false,
+                        profilePicture: profilePicture,
+                        unlockedSkins: [],
+                        ban: false,
+                        banReason: "",
+                        panelAccess: false,
+                        showAnimation: true
+                    }).then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Account Created',
+                            text: 'Your account has been created and is awaiting approval.'
+                        });
+                    }).catch((error) => {
+                        console.error("Error adding document: ", error);
+                    });
+                })
+                .catch((error) => {
+                    var errorMessage = error.message;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMessage
+                    });
+                });
+        }
+
+async function login() {
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+
+    try {
+        const doc = await firestore.collection("users").doc(username).get();
+        if (doc.exists) {
+            const userData = doc.data();
+            if (userData.ban) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Banned',
+                    text: 'You are banned for ' + userData.banReason
+                });
+            } else {
+                // Compare stored password with entered password
+                if (password === userData.password) {
+                    setCookie("username", username, 1); // Set the cookie for 1 day
+                    setCookie("roles", userData.roles.join(','), 1); // Set the roles cookie
+                    setCookie("tokens", userData.tokens, 1); // Set the tokens cookie
+                    window.location.href = `stats.html`;
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Authentication Failed',
+                        text: 'Invalid username or password.'
+                    });
+                }
+            }
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'User Not Found',
+                text: 'User does not exist.'
+            });
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to retrieve user data. Please try again later.'
+        });
+    }
+}
+
+
+    </script>
+</body>
+</html>

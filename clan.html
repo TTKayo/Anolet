@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Clans and Users</title>
+  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+  <!-- Add Firebase products that you want to use -->
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .clan { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+    .clan img { max-width: 100px; }
+    .form-control { margin: 5px 0; }
+    #userClanView { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Clans</h1>
+  <div id="clans"></div>
+
+  <h2>Create Clan</h2>
+  <div>
+    <input type="text" id="clanName" placeholder="Clan Name" class="form-control">
+    <input type="text" id="clanImage" placeholder="Image URL" class="form-control">
+    <textarea id="clanDescription" placeholder="Description" class="form-control"></textarea>
+    <button onclick="createClan()">Create Clan</button>
+  </div>
+
+  <h2>Your Clan</h2>
+  <div id="userClanView">
+    <h3 id="userClanName"></h3>
+    <div id="userClanMembers"></div>
+    <button onclick="leaveClan(userClanId)">Leave Clan</button>
+  </div>
+
+  <h2>Users, <span id="usernameDisplay"></span></h2> 
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+      authDomain: "cosmik-7c124.firebaseapp.com",
+      databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
+      projectId: "cosmik-7c124",
+      storageBucket: "cosmik-7c124.appspot.com",
+      messagingSenderId: "412506429662",
+      appId: "1:412506429662:web:9ca3e17199297df7384a4f",
+      measurementId: "G-R7K0LTHCK3"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    let userClanId = null;
+
+    // Helper function to get a cookie value
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+      } else {
+        return null; // Handle case where cookie is not found or incorrectly formatted
+      }
+    }
+
+    // Fetch and display clans
+    function fetchClans() {
+      const username = getCookie("username");
+      console.log("Username fetched:", username); // Debug statement
+
+      if (!username) {
+        console.error("Username not found in cookies.");
+        return;
+      }
+
+      document.getElementById("usernameDisplay").innerText = username; // Set username in the element
+
+      db.collection("clans").onSnapshot(snapshot => {
+        const clansDiv = document.getElementById("clans");
+        clansDiv.innerHTML = "";
+        snapshot.forEach(doc => {
+          const clan = doc.data();
+          const isMember = clan.members.includes(username);
+          if (isMember) {
+            userClanId = doc.id;
+            document.getElementById("userClanView").style.display = "block";
+            document.getElementById("userClanName").innerText = clan.name;
+            fetchClanMembers(doc.id);
+          } else {
+            clansDiv.innerHTML += `
+              <div class="clan">
+                <h3>${clan.name}</h3>
+                <img src="${clan.image}" alt="${clan.name}">
+                <p>${clan.description}</p>
+                <p>Owner: ${clan.owner}</p>
+                <button onclick="joinClan('${doc.id}')">Join Clan</button>
+              </div>
+            `;
+          }
+        });
+      });
+    }
+
+    // Fetch and display clan members
+    function fetchClanMembers(clanId) {
+      db.collection("clans").doc(clanId).get().then(doc => {
+        const clan = doc.data();
+        const membersDiv = document.getElementById("userClanMembers");
+        membersDiv.innerHTML = "";
+        clan.members.forEach(member => {
+          db.collection("users").doc(member).get().then(userDoc => {
+            const userData = userDoc.data();
+            membersDiv.innerHTML += `
+              <div class="member">
+                <img src="${userData.profilePicture}" alt="${userData.username}" width="50" height="50">
+                <p>${userData.username}</p>
+              </div>
+            `;
+          });
+        });
+      });
+    }
+
+    // Create a new clan
+    function createClan() {
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert("You need to be logged in to create a clan.");
+        return;
+      }
+
+      const name = document.getElementById("clanName").value;
+      const image = document.getElementById("clanImage").value;
+      const description = document.getElementById("clanDescription").value;
+      const username = getCookie("username");
+
+      db.collection("clans").add({
+        name,
+        image,
+        description,
+        owner: username,
+        helpers: [],
+        members: [username]
+      }).then(() => {
+        alert("Clan created successfully!");
+      }).catch(error => {
+        console.error("Error creating clan: ", error);
+      });
+    }
+
+    // Join a clan
+    function joinClan(clanId) {
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert("You need to be logged in to join a clan.");
+        return;
+      }
+
+      const username = getCookie("username");
+      const clanRef = db.collection("clans").doc(clanId);
+      clanRef.update({
+        members: firebase.firestore.FieldValue.arrayUnion(username)
+      }).then(() => {
+        alert("You have joined the clan!");
+      }).catch(error => {
+        console.error("Error joining clan: ", error);
+      });
+    }
+
+    // Leave a clan
+    function leaveClan(clanId) {
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert("You need to be logged in to leave a clan.");
+        return;
+      }
+
+      const username = getCookie("username");
+      const clanRef = db.collection("clans").doc(clanId);
+      clanRef.update({
+        members: firebase.firestore.FieldValue.arrayRemove(username)
+      }).then(() => {
+        alert("You have left the clan.");
+        document.getElementById("userClanView").style.display = "none";
+      }).catch(error => {
+        console.error("Error leaving clan: ", error);
+      });
+    }
+
+    // Fetch clans on page load
+    fetchClans();
+
+    // Authentication state listener
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        console.log("User signed in: ", user);
+      } else {
+        console.log("No user signed in.");
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Chrome Chest</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .chest-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        .chest {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #1f3a93, #62a8ea);
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .chest::before,
+        .chest::after {
+            content: '';
+            position: absolute;
+            background: linear-gradient(145deg, #1f3a93, #62a8ea);
+            border-radius: 15px;
+        }
+
+        .chest::before {
+            width: 80%;
+            height: 20px;
+            top: -10px;
+            left: 10%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .chest::after {
+            width: 80%;
+            height: 20px;
+            bottom: -10px;
+            left: 10%;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .chest .lid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(145deg, #1f3a93, #62a8ea);
+            border-radius: 15px 15px 0 0;
+            box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.1);
+            transform-origin: bottom;
+            transition: transform 0.3s ease;
+        }
+
+        .chest-container.clicked .chest {
+            transform: translateY(-20px);
+        }
+
+        .chest-container.clicked .chest .lid {
+            transform: rotateX(45deg);
+        }
+
+        .images {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            transform: translate(-50%, -50%);
+            display: none;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .images img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .images img:nth-child(1) {
+            animation: popUp 0.5s ease 0s forwards;
+        }
+
+        .images img:nth-child(2) {
+            animation: popUp 0.5s ease 0.1s forwards;
+        }
+
+        .images img:nth-child(3) {
+            animation: popUp 0.5s ease 0.2s forwards;
+        }
+
+        .images img:nth-child(4) {
+            animation: popUp 0.5s ease 0.3s forwards;
+        }
+
+        .images img:nth-child(5) {
+            animation: popUp 0.5s ease 0.4s forwards;
+        }
+
+        .images img:nth-child(6) {
+            animation: popUp 0.5s ease 0.5s forwards;
+        }
+
+        @keyframes popUp {
+            0% {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .chest-container.clicked .images {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chest-container" onclick="toggleChest()">
+        <div class="chest">
+            <div class="lid"></div>
+        </div>
+        <div class="images" id="unlocked-images">
+            <!-- Images will be dynamically added here -->
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+            authDomain: "cosmik-7c124.firebaseapp.com",
+            databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
+            projectId: "cosmik-7c124",
+            storageBucket: "cosmik-7c124.appspot.com",
+            messagingSenderId: "412506429662",
+            appId: "1:412506429662:web:9ca3e17199297df7384a4f",
+            measurementId: "G-R7K0LTHCK3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const firestore = firebase.firestore();
+
+        function toggleChest() {
+            const chestContainer = document.querySelector('.chest-container');
+            chestContainer.classList.toggle('clicked');
+            if (chestContainer.classList.contains('clicked')) {
+                buyChest();
+            }
+        }
+
+        function getCookie(name) {
+            const cname = name + "=";
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(cname) == 0) {
+                    return c.substring(cname.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        function buyChest() {
+            const username = getCookie("username");
+            let tokens = parseInt(getCookie("tokens"), 10);
+
+            if (tokens >= 25) {
+                tokens -= 25;
+                setCookie("tokens", tokens, 1);
+
+                firestore.collection("users").doc(username).update({
+                    tokens: tokens
+                }).then(() => {
+                    unlockImages(username);
+                }).catch((error) => {
+                    console.error("Error updating tokens: ", error);
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Not Enough Tokens',
+                    text: 'You need at least 25 tokens to buy a chest.'
+                });
+            }
+        }
+
+        function unlockImages(username) {
+            const images = [
+                 { src: 'Hawkmrg.webp', chance: 0.5 },
+        { src: 'Ghost.png', chance: 0.5 },
+        { src: 'NeonBot.png', chance: 0.1 },
+        { src: 'GamerYTRW.webp', chance: 0.1 },
+        { src: 'Warrior.webp', chance: 0.01 },
+        { src: 'ChezyBRED.webp', chance: 0.001 },
+        { src: 'Prq.webp', chance: 0.0001 },
+        { src: 'Buenar.webp', chance: 0.0001 },
+        { src: 'Lost Bot.png', chance: 0.00001 },
+            ];
+
+            let unlockedImages = [];
+
+            images.forEach(function(image) {
+                if (Math.random() < image.chance) {
+                    unlockedImages.push(image.src);
+                }
+            });
+
+            console.log('Unlocked images: ', unlockedImages);
+
+            if (unlockedImages.length > 0) {
+                const imageToShow = unlockedImages[0];
+
+                firestore.collection("users").doc(username).update({
+                    unlockedSkins: firebase.firestore.FieldValue.arrayUnion(imageToShow)
+                }).then(() => {
+                    displayUnlockedImages([imageToShow]);
+                }).catch((error) => {
+                    console.error("Error updating unlocked skins: ", error);
+                });
+            } else {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No Images Unlocked',
+                    text: 'Better luck next time!'
+                });
+            }
+        }
+
+        function displayUnlockedImages(imageUrls) {
+            const imageContainer = document.getElementById('unlocked-images');
+            imageContainer.innerHTML = '';
+
+            imageUrls.forEach((url) => {
+                const img = document.createElement('img');
+                img.src = url;
+                imageContainer.appendChild(img);
+            });
+        }
+    </script>
+</body>
+
+</html>

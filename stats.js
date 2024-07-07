@@ -284,111 +284,54 @@ window.onload = function() {
         addTokens(username);
     }, 8 * 60 * 60 * 1000); // 8 hours in milliseconds
 };
- document.getElementById('claim-tokens-button').addEventListener('click', () => {
-    console.log("Claim Tokens button clicked");
-    claimTokens();
-});
-
-async function claimTokens() {
-    console.log("Claim Tokens function called");
-    const username = getCookie('username'); // Assuming you have a cookie storing the username
-    console.log("Username from cookie: ", username);
-    if (!username) {
-        Swal.fire('Error', 'User not logged in.', 'error');
-        return;
-    }
-
-    try {
-        const userDocRef = db.collection('users').doc(username);
-        const userDoc = await userDocRef.get();
-        if (!userDoc.exists) {
-            Swal.fire('Error', 'User does not exist.', 'error');
-            return;
-        }
-
-        const userData = userDoc.data();
-      function getCookie(name) {
-            const cname = name + "=";
-            const decodedCookie = decodeURIComponent(document.cookie);
-            const ca = decodedCookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(cname) == 0) {
-                    return c.substring(cname.length, c.length);
-                }
-            }
-            return "";
-        }
-
-        function setCookie(name, value, days) {
-            const d = new Date();
-            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-            const expires = "expires=" + d.toUTCString();
-            document.cookie = name + "=" + value + ";" + expires + ";path=/";
-        }
-
-        async function claimTokens() {
-            const username = getCookie("username");
-            const tokenAmount = 500;
-            const eightHoursInMillis = 8 * 60 * 60 * 1000;
-
+  async function claimTokens() {
+            const username = getCookie('username'); // Assuming you have a cookie storing the username
             if (!username) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'You must be logged in to claim tokens.'
-                });
+                Swal.fire('Error', 'User not logged in.', 'error');
                 return;
             }
 
             try {
-                const userDoc = await firestore.collection("users").doc(username).get();
-                if (userDoc.exists) {
-                    let userData = userDoc.data();
-                    let lastClaimTime = userData.lastClaimTime ? userData.lastClaimTime.toDate() : null;
-                    let currentTime = new Date();
+                const userDocRef = db.collection('users').doc(username);
+                const userDoc = await userDocRef.get();
+                if (!userDoc.exists) {
+                    Swal.fire('Error', 'User does not exist.', 'error');
+                    return;
+                }
 
-                    if (lastClaimTime && (currentTime - lastClaimTime) < eightHoursInMillis) {
-                        let nextClaimTime = new Date(lastClaimTime.getTime() + eightHoursInMillis);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: `You can claim tokens again after ${nextClaimTime.toLocaleString()}`
-                        });
-                        return;
-                    }
+                const userData = userDoc.data();
+                const currentTokens = userData.tokens || 0;
 
-                    let newTokenCount = userData.tokens + tokenAmount;
-                    await firestore.collection("users").doc(username).update({
-                        tokens: newTokenCount,
-                        lastClaimTime: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-
-                    setCookie("tokens", newTokenCount, 1);
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Tokens Claimed',
-                        text: 'You have successfully claimed 500 tokens!'
+                // Check if claimAmount collection exists
+                const claimAmountCollection = await userDocRef.collection('claimAmount').get();
+                let claimAmount = 0;
+                if (!claimAmountCollection.empty) {
+                    claimAmountCollection.forEach(doc => {
+                        claimAmount += doc.data().amount;
                     });
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'User not found.'
-                    });
+                    // Add default claimAmount document if not exists
+                    await userDocRef.collection('claimAmount').add({ amount: 100 }); // Default amount to claim
+                    claimAmount = 100;
                 }
+
+                const newTokenAmount = currentTokens + claimAmount;
+
+                // Update Firestore
+                await userDocRef.update({ tokens: newTokenAmount });
+
+                // Update cookies
+                setCookie('tokens', newTokenAmount, 7); // Store tokens in cookies for 7 days
+
+                // Update tokens field on the page
+                document.getElementById('tokens').textContent = 'Tokens: ' + newTokenAmount;
+
+                Swal.fire('Success', 'Tokens claimed successfully!', 'success');
             } catch (error) {
-                console.error("Error claiming tokens: ", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to claim tokens. Please try again later.'
-                });
+                console.error('Error claiming tokens: ', error);
+                Swal.fire('Error', 'Failed to claim tokens.', 'error');
             }
         }
 
-        document.getElementById("claim-button").addEventListener("click", claimTokens);
+        // Event listener for the claim tokens button
+        document.getElementById('claim-tokens-button').addEventListener('click', claimTokens);

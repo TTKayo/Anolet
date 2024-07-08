@@ -103,7 +103,7 @@
         </div>
         <div class="rewards-container">
             <h2>Rewards</h2>
-            <div class="reward-item">Plus</div>
+            <div class="reward-item">Plus | 5$</div>
             <div class="reward-item">50k Token | 5$ </div>
             <div class="reward-item">125k Token | 10$</div>
             <div class="reward-item">300k Token | 20$</div>
@@ -144,8 +144,8 @@
             }).then(() => {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Data Submitted',
-                    text: 'Your data has been submitted successfully.'
+                    title: 'Done',
+                    text: 'You will get your purchased item soon.'
                 });
                 document.getElementById("dataForm").reset();
             }).catch((error) => {
@@ -153,7 +153,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Failed to submit data. Please try again later.'
+                    text: 'Failed to Buy. Please try again later.'
                 });
             });
         }

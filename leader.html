@@ -28,12 +28,19 @@
     }
     .leaderboard li {
       display: flex;
+      align-items: center;
       justify-content: space-between;
       padding: 10px 20px;
       border-bottom: 1px solid #ddd;
     }
     .leaderboard li:nth-child(even) {
       background: #f9f9f9;
+    }
+    .leaderboard .profile-pic {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
     }
   </style>
 </head>
@@ -77,8 +84,22 @@
         const user = doc.data();
         console.log(username, user); // Log username and user data for debugging
         const tokens = user.tokens || 0;
+        const profilePicture = user.profilePicture || 'default-profile.png'; // Use default image if none provided
+        const roles = user.roles || 'No role assigned';
+
         const listItem = document.createElement('li');
-        listItem.textContent = `${username}: ${tokens} tokens`;
+        
+        const profileImg = document.createElement('img');
+        profileImg.src = profilePicture;
+        profileImg.alt = `${username}'s profile picture`;
+        profileImg.classList.add('profile-pic');
+        
+        const userInfo = document.createElement('div');
+        userInfo.innerHTML = `<strong>${username}</strong>: ${tokens} tokens<br><small>${roles}</small>`;
+        
+        listItem.appendChild(profileImg);
+        listItem.appendChild(userInfo);
+        
         leaderboardList.appendChild(listItem);
       });
     }

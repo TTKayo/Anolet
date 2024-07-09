@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Leaderboard</title>
+  <title>Leaderboards</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f0f0f0;
       margin: 0;
       padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+    .leaderboards {
+      display: flex;
+      width: 90%;
+      margin: 50px auto;
     }
     .leaderboard {
-      width: 50%;
-      margin: 50px auto;
+      flex: 1;
+      margin: 0 10px;
       background: white;
       padding: 20px;
       border-radius: 8px;
@@ -45,11 +52,19 @@
   </style>
 </head>
 <body>
-  <div class="leaderboard">
-    <h1>Leaderboard</h1>
-    <ul id="leaderboard-list">
-      <!-- Leaderboard entries will be inserted here -->
-    </ul>
+  <div class="leaderboards">
+    <div class="leaderboard">
+      <h1>Tokens Leaderboard</h1>
+      <ul id="leaderboard-list-tokens">
+        <!-- Leaderboard entries will be inserted here -->
+      </ul>
+    </div>
+    <div class="leaderboard">
+      <h1>Unlocked Skins Leaderboard</h1>
+      <ul id="leaderboard-list-skins">
+        <!-- Leaderboard entries will be inserted here -->
+      </ul>
+    </div>
   </div>
 
   <!-- Firebase SDKs -->
@@ -73,39 +88,72 @@
     const db = firebase.firestore();
 
     // Fetch users and sort by tokens
-    async function fetchAndDisplayLeaderboard() {
+    async function fetchAndDisplayLeaderboards() {
       const usersCollection = db.collection('users');
-      const snapshot = await usersCollection.orderBy('tokens', 'desc').get();
-      const leaderboardList = document.getElementById('leaderboard-list');
-      leaderboardList.innerHTML = '';
+      const snapshot = await usersCollection.get();
+      const leaderboardListTokens = document.getElementById('leaderboard-list-tokens');
+      const leaderboardListSkins = document.getElementById('leaderboard-list-skins');
+      leaderboardListTokens.innerHTML = '';
+      leaderboardListSkins.innerHTML = '';
 
+      const users = [];
       snapshot.forEach(doc => {
         const username = doc.id; // Use document ID as username
         const user = doc.data();
-        console.log(username, user); // Log username and user data for debugging
+        users.push({ username, ...user });
+      });
+
+      // Sort by tokens
+      users.sort((a, b) => b.tokens - a.tokens);
+      users.forEach(user => {
+        const username = user.username;
         const tokens = user.tokens || 0;
         const profilePicture = user.profilePicture || 'default-profile.png'; // Use default image if none provided
         const roles = user.roles || 'No role assigned';
 
         const listItem = document.createElement('li');
-        
+
         const profileImg = document.createElement('img');
         profileImg.src = profilePicture;
         profileImg.alt = `${username}'s profile picture`;
         profileImg.classList.add('profile-pic');
-        
+
         const userInfo = document.createElement('div');
         userInfo.innerHTML = `<strong>${username}</strong>: ${tokens} tokens<br><small>${roles}</small>`;
-        
+
         listItem.appendChild(profileImg);
         listItem.appendChild(userInfo);
-        
-        leaderboardList.appendChild(listItem);
+
+        leaderboardListTokens.appendChild(listItem);
+      });
+
+      // Sort by unlocked skins
+      users.sort((a, b) => (b.unlockedSkins ? b.unlockedSkins.length : 0) - (a.unlockedSkins ? a.unlockedSkins.length : 0));
+      users.forEach(user => {
+        const username = user.username;
+        const unlockedSkinsCount = user.unlockedSkins ? user.unlockedSkins.length : 0;
+        const profilePicture = user.profilePicture || 'default-profile.png'; // Use default image if none provided
+        const roles = user.roles || 'No role assigned';
+
+        const listItem = document.createElement('li');
+
+        const profileImg = document.createElement('img');
+        profileImg.src = profilePicture;
+        profileImg.alt = `${username}'s profile picture`;
+        profileImg.classList.add('profile-pic');
+
+        const userInfo = document.createElement('div');
+        userInfo.innerHTML = `<strong>${username}</strong>: ${unlockedSkinsCount} unlocked skins<br><small>${roles}</small>`;
+
+        listItem.appendChild(profileImg);
+        listItem.appendChild(userInfo);
+
+        leaderboardListSkins.appendChild(listItem);
       });
     }
 
-    // Call the function to fetch and display the leaderboard
-    fetchAndDisplayLeaderboard();
+    // Call the function to fetch and display the leaderboards
+    fetchAndDisplayLeaderboards();
   </script>
 </body>
 </html>

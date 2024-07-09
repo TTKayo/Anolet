@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Animated Index</title>
+    <title>Neon Login</title>
     <style>
         body {
             background-color: black;
@@ -13,36 +13,20 @@
             margin: 0;
             padding: 0;
             display: flex;
-        }
-
-        .sidebar {
-            width: 250px;
-            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
             height: 100vh;
-            padding-top: 30px;
             position: relative;
-            z-index: 2;
-        }
-
-        .sidebar .menu-item {
-            padding: 15px;
-            color: #0ff;
-            font-size: 1.2rem;
-            text-align: center;
-            cursor: pointer;
-            position: relative;
-            z-index: 1;
-        }
-
-        .sidebar .menu-item:hover {
-            background: #0ff;
-            color: black;
         }
 
         .container {
-            flex: 1;
             text-align: center;
             padding: 50px;
+            border: 2px solid #0ff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff, 0 0 50px #0ff;
+            position: relative;
+            z-index: 2;
         }
 
         h1 {
@@ -52,10 +36,16 @@
             animation: neon-glow 1.5s infinite alternate;
         }
 
-        .button-container {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
+        input[type="text"], input[type="password"] {
+            background: black;
+            border: 2px solid #0ff;
+            border-radius: 5px;
+            color: #0ff;
+            font-size: 1.2rem;
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .button {
@@ -71,6 +61,8 @@
             overflow: hidden;
             z-index: 1;
             transition: color 0.3s;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .button:before {
@@ -106,76 +98,13 @@
             }
         }
 
-        @keyframes glitch {
-            0% {
-                transform: skew(0deg);
+        @keyframes neon-line {
+            from {
+                box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff;
             }
-            10% {
-                transform: skew(-10deg);
+            to {
+                box-shadow: 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff, 0 0 50px #0ff;
             }
-            20% {
-                transform: skew(10deg);
-            }
-            30% {
-                transform: skew(0deg);
-            }
-            40% {
-                transform: skew(-5deg);
-            }
-            50% {
-                transform: skew(5deg);
-            }
-            60% {
-                transform: skew(0deg);
-            }
-            70% {
-                transform: skew(-15deg);
-            }
-            80% {
-                transform: skew(15deg);
-            }
-            90% {
-                transform: skew(0deg);
-            }
-            100% {
-                transform: skew(0deg);
-            }
-        }
-
-        .glitch {
-            position: relative;
-            display: inline-block;
-            animation: glitch 1.5s infinite;
-        }
-
-        .glitch:before,
-        .glitch:after {
-            content: attr(data-text);
-            position: absolute;
-            left: 0;
-            width: 100%;
-            opacity: 0.8;
-        }
-
-        .glitch:before {
-            animation: glitch 1.5s infinite;
-            color: #0ff;
-            clip: rect(0, 900px, 0, 0);
-        }
-
-        .glitch:after {
-            animation: glitch 2s infinite;
-            color: #0ff;
-            clip: rect(0, 900px, 0, 0);
-        }
-
-        .credit {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 1rem;
-            color: #0ff;
-            animation: neon-glow 1.5s infinite alternate;
         }
 
         .neon-line {
@@ -198,46 +127,17 @@
             top: 75%;
         }
 
-        @keyframes neon-line {
-            from {
-                box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff;
-            }
-            to {
-                box-shadow: 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff, 0 0 50px #0ff;
-            }
-        }
-
-        @keyframes move-neon-line {
-            0% {
-                transform: translateX(-100%);
-            }
-            50% {
-                transform: translateX(100%);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="menu-item">Home</div>
-        <div class="menu-item">Join Game</div>
-        <div class="menu-item">Host Game</div>
-        <div class="menu-item">Discover</div>
-        <div class="menu-item">Shop</div>
-    </div>
     <div class="container">
-        <h1 class="glitch" data-text="Welcome to Blooket!">Welcome to Blooket!</h1>
-        <div class="button-container">
-            <button class="button">Join Game</button>
-            <button class="button">Host Game</button>
-            <button class="button">Discover</button>
-            <button class="button">Shop</button>
-        </div>
+        <h1 class="glitch" data-text="Login to Blooket">Login to Blooket</h1>
+        <form>
+            <input type="text" placeholder="Username">
+            <input type="password" placeholder="Password">
+            <button type="submit" class="button">Login</button>
+        </form>
     </div>
-    <div class="credit">Created by Your Name</div>
     <div class="neon-line"></div>
     <div class="neon-line"></div>
     <div class="neon-line"></div>

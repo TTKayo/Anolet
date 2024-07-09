@@ -73,9 +73,9 @@
       leaderboardList.innerHTML = '';
 
       snapshot.forEach(doc => {
+        const username = doc.id; // Use document ID as username
         const user = doc.data();
-        console.log(user); // Log user data for debugging
-        const username = user.username || 'Unknown User';
+        console.log(username, user); // Log username and user data for debugging
         const tokens = user.tokens || 0;
         const listItem = document.createElement('li');
         listItem.textContent = `${username}: ${tokens} tokens`;

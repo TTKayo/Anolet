@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Animated Index</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #0ff;
+            animation: neon-glow 1.5s infinite alternate;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            background: #0ff;
+            border: none;
+            border-radius: 5px;
+            color: black;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            margin: 10px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: color 0.3s;
+        }
+
+        .button:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+            z-index: -1;
+        }
+
+        .button:hover:before {
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+        }
+
+        .button:hover {
+            color: white;
+        }
+
+        @keyframes neon-glow {
+            from {
+                text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff, 0 0 50px #0ff, 0 0 60px #0ff, 0 0 70px #0ff;
+            }
+            to {
+                text-shadow: 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff, 0 0 50px #0ff, 0 0 60px #0ff, 0 0 70px #0ff, 0 0 80px #0ff;
+            }
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: skew(0deg);
+            }
+            10% {
+                transform: skew(-10deg);
+            }
+            20% {
+                transform: skew(10deg);
+            }
+            30% {
+                transform: skew(0deg);
+            }
+            40% {
+                transform: skew(-5deg);
+            }
+            50% {
+                transform: skew(5deg);
+            }
+            60% {
+                transform: skew(0deg);
+            }
+            70% {
+                transform: skew(-15deg);
+            }
+            80% {
+                transform: skew(15deg);
+            }
+            90% {
+                transform: skew(0deg);
+            }
+            100% {
+                transform: skew(0deg);
+            }
+        }
+
+        .glitch {
+            position: relative;
+            display: inline-block;
+            animation: glitch 1.5s infinite;
+        }
+
+        .glitch:before,
+        .glitch:after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            width: 100%;
+            opacity: 0.8;
+        }
+
+        .glitch:before {
+            animation: glitch 1.5s infinite;
+            color: #0ff;
+            clip: rect(0, 900px, 0, 0);
+        }
+
+        .glitch:after {
+            animation: glitch 2s infinite;
+            color: #0ff;
+            clip: rect(0, 900px, 0, 0);
+        }
+
+        @keyframes glitch {
+            0% {
+                clip: rect(20px, 9999px, 80px, 0);
+                transform: skew(0.5deg);
+            }
+            10% {
+                clip: rect(0, 9999px, 30px, 0);
+                transform: skew(1deg);
+            }
+            20% {
+                clip: rect(60px, 9999px, 100px, 0);
+                transform: skew(0deg);
+            }
+            30% {
+                clip: rect(30px, 9999px, 60px, 0);
+                transform: skew(1.5deg);
+            }
+            40% {
+                clip: rect(0, 9999px, 40px, 0);
+                transform: skew(0.5deg);
+            }
+            50% {
+                clip: rect(20px, 9999px, 80px, 0);
+                transform: skew(1deg);
+            }
+            60% {
+                clip: rect(60px, 9999px, 100px, 0);
+                transform: skew(0.5deg);
+            }
+            70% {
+                clip: rect(30px, 9999px, 60px, 0);
+                transform: skew(1deg);
+            }
+            80% {
+                clip: rect(0, 9999px, 40px, 0);
+                transform: skew(1.5deg);
+            }
+            90% {
+                clip: rect(20px, 9999px, 80px, 0);
+                transform: skew(0.5deg);
+            }
+            100% {
+                clip: rect(0, 9999px, 40px, 0);
+                transform: skew(1deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="glitch" data-text="Welcome to Blooket!">Welcome to Blooket!</h1>
+        <div class="button-container">
+            <button class="button">Join Game</button>
+            <button class="button">Host Game</button>
+            <button class="button">Discover</button>
+            <button class="button">Shop</button>
+        </div>
+    </div>
+</body>
+</html>

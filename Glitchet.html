@@ -143,50 +143,53 @@
             clip: rect(0, 900px, 0, 0);
         }
 
-        @keyframes glitch {
+        .credit {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1rem;
+            color: #0ff;
+            animation: neon-glow 1.5s infinite alternate;
+        }
+
+        .neon-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #0ff;
+            animation: neon-line 2s infinite alternate;
+        }
+
+        .neon-line:nth-child(1) {
+            top: 25%;
+        }
+
+        .neon-line:nth-child(2) {
+            top: 50%;
+        }
+
+        .neon-line:nth-child(3) {
+            top: 75%;
+        }
+
+        @keyframes neon-line {
+            from {
+                box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff;
+            }
+            to {
+                box-shadow: 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff, 0 0 50px #0ff;
+            }
+        }
+
+        @keyframes move-neon-line {
             0% {
-                clip: rect(20px, 9999px, 80px, 0);
-                transform: skew(0.5deg);
-            }
-            10% {
-                clip: rect(0, 9999px, 30px, 0);
-                transform: skew(1deg);
-            }
-            20% {
-                clip: rect(60px, 9999px, 100px, 0);
-                transform: skew(0deg);
-            }
-            30% {
-                clip: rect(30px, 9999px, 60px, 0);
-                transform: skew(1.5deg);
-            }
-            40% {
-                clip: rect(0, 9999px, 40px, 0);
-                transform: skew(0.5deg);
+                transform: translateX(-100%);
             }
             50% {
-                clip: rect(20px, 9999px, 80px, 0);
-                transform: skew(1deg);
-            }
-            60% {
-                clip: rect(60px, 9999px, 100px, 0);
-                transform: skew(0.5deg);
-            }
-            70% {
-                clip: rect(30px, 9999px, 60px, 0);
-                transform: skew(1deg);
-            }
-            80% {
-                clip: rect(0, 9999px, 40px, 0);
-                transform: skew(1.5deg);
-            }
-            90% {
-                clip: rect(20px, 9999px, 80px, 0);
-                transform: skew(0.5deg);
+                transform: translateX(100%);
             }
             100% {
-                clip: rect(0, 9999px, 40px, 0);
-                transform: skew(1deg);
+                transform: translateX(-100%);
             }
         }
     </style>
@@ -201,5 +204,9 @@
             <button class="button">Shop</button>
         </div>
     </div>
+    <div class="credit">Created by Your Name</div>
+    <div class="neon-line"></div>
+    <div class="neon-line"></div>
+    <div class="neon-line"></div>
 </body>
 </html>

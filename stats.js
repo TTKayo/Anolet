@@ -1,77 +1,23 @@
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js";
-        
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
-            authDomain: "cosmik-7c124.firebaseapp.com",
-            databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
-            projectId: "cosmik-7c124",
-            storageBucket: "cosmik-7c124.appspot.com",
-            messagingSenderId: "412506429662",
-            appId: "1:412506429662:web:9ca3e17199297df7384a4f",
-            measurementId: "G-R7K0LTHCK3"
-        };
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js";
+import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js";
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+// Firebase configuration
+const firebaseConfig = {
+   apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+  authDomain: "cosmik-7c124.firebaseapp.com",
+  databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
+  projectId: "cosmik-7c124",
+  storageBucket: "cosmik-7c124.appspot.com",
+  messagingSenderId: "412506429662",
+  appId: "1:412506429662:web:9ca3e17199297df7384a4f",
+  measurementId: "G-R7K0LTHCK3"
+};
 
-        // Function to get a cookie by name
-        function getCookie(name) {
-            let cookieArr = document.cookie.split(";");
-            for (let i = 0; i < cookieArr.length; i++) {
-                let cookiePair = cookieArr[i].split("=");
-                if (name == cookiePair[0].trim()) {
-                    return decodeURIComponent(cookiePair[1]);
-                }
-            }
-            return null;
-        }
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const firestore = getFirestore(app);
 
-        // Get the username from cookies
-        const username = getCookie("username");
-        console.log("Username from cookies:", username);
-
-        // Function to fetch and display badges
-        async function fetchBadges() {
-            if (username) {
-                try {
-                    const userDocRef = doc(db, "users", username);
-                    const userDoc = await getDoc(userDocRef);
-                    if (userDoc.exists()) {
-                        const userData = userDoc.data();
-                        const badges = userData.badges;
-                        console.log("Badges found:", badges);
-                        const badgeContainer = document.getElementById("badgeContainer");
-                        const noBadgesMessage = document.getElementById("noBadgesMessage");
-
-                        if (Array.isArray(badges) && badges.length > 0) {
-                            badges.forEach(badgeUrl => {
-                                const badgeDiv = document.createElement("div");
-                                badgeDiv.className = "badge";
-                                const badgeImg = document.createElement("img");
-                                badgeImg.src = badgeUrl;
-                                badgeDiv.appendChild(badgeImg);
-                                badgeContainer.appendChild(badgeDiv);
-                            });
-                        } else {
-                            noBadgesMessage.style.display = "block";
-                        }
-                    } else {
-                        console.log("No such user document!");
-                    }
-                } catch (error) {
-                    console.error("Error fetching user document:", error);
-                }
-            } else {
-                console.log("Username not found in cookies.");
-            }
-        }
-
-        // Fetch and display badges on page load
-        window.onload = fetchBadges;
-
+// Function to get a cookie by name
 function getCookie(name) {
     const cname = name + "=";
     const decodedCookie = decodeURIComponent(document.cookie);
@@ -88,6 +34,7 @@ function getCookie(name) {
     return "";
 }
 
+// Function to set a cookie
 function setCookie(name, value, days) {
     const d = new Date();
     d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -95,20 +42,27 @@ function setCookie(name, value, days) {
     document.cookie = name + "=" + value + ";" + expires + ";path=/";
 }
 
+// Function to buy a chest
 function buyChest() {
     const username = getCookie("username");
     let tokens = parseInt(getCookie("tokens"), 10);
 
     if (tokens >= 25) {
         tokens -= 25;
-        setCookie("tokens", tokens, 1); // Update tokens in cookies
+        setCookie("tokens", tokens.toString(), 1); // Update tokens in cookies
 
-        firestore.collection("users").doc(username).update({
+        const userRef = doc(firestore, "users", username);
+        updateDoc(userRef, {
             tokens: tokens
         }).then(() => {
             unlockImages(username);
         }).catch((error) => {
             console.error("Error updating tokens: ", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to update tokens.'
+            });
         });
     } else {
         Swal.fire({
@@ -119,6 +73,7 @@ function buyChest() {
     }
 }
 
+// Function to unlock images based on chances
 function unlockImages(username) {
     const images = [
         { src: 'Season1.gif', chance: 0.1 },
@@ -142,12 +97,18 @@ function unlockImages(username) {
     });
 
     if (unlockedImages.length > 0) {
-        firestore.collection("users").doc(username).update({
-            unlockedSkins: firebase.firestore.FieldValue.arrayUnion(...unlockedImages)
+        const userRef = doc(firestore, "users", username);
+        updateDoc(userRef, {
+            unlockedSkins: arrayUnion(...unlockedImages)
         }).then(() => {
             displayUnlockedImages(unlockedImages);
         }).catch((error) => {
             console.error("Error updating unlocked images: ", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to unlock images.'
+            });
         });
     } else {
         Swal.fire({
@@ -158,6 +119,7 @@ function unlockImages(username) {
     }
 }
 
+// Function to display unlocked images
 function displayUnlockedImages(images) {
     const container = document.getElementById('unlocked-images');
     container.innerHTML = '';
@@ -173,9 +135,11 @@ function displayUnlockedImages(images) {
     });
 }
 
+// Function to update profile picture
 function updateProfilePicture(imageSrc) {
     const username = getCookie("username");
-    firestore.collection("users").doc(username).update({
+    const userRef = doc(firestore, "users", username);
+    updateDoc(userRef, {
         profilePicture: imageSrc
     }).then(() => {
         Swal.fire({
@@ -193,6 +157,7 @@ function updateProfilePicture(imageSrc) {
     });
 }
 
+// Function to display profile picture on page load
 function displayProfilePicture() {
     const username = getCookie("username");
     if (!username) {
@@ -200,31 +165,31 @@ function displayProfilePicture() {
         return;
     }
 
-    firestore.collection("users").doc(username).get()
-        .then((doc) => {
-            if (doc.exists) {
-                const userData = doc.data();
-                const profilePictureSrc = userData.profilePicture;
-                if (profilePictureSrc) {
-                    const profilePictureElement = document.getElementById('profile-picture');
-                    if (profilePictureElement) {
-                        profilePictureElement.src = profilePictureSrc;
-                        profilePictureElement.style.display = 'block'; // Show the image
-                    } else {
-                        console.error("Profile picture element not found in HTML.");
-                    }
+    const userRef = doc(firestore, "users", username);
+    getDoc(userRef).then((doc) => {
+        if (doc.exists()) {
+            const userData = doc.data();
+            const profilePictureSrc = userData.profilePicture;
+            if (profilePictureSrc) {
+                const profilePictureElement = document.getElementById('profile-picture');
+                if (profilePictureElement) {
+                    profilePictureElement.src = profilePictureSrc;
+                    profilePictureElement.style.display = 'block'; // Show the image
                 } else {
-                    console.log('No profile picture set for this user.');
+                    console.error("Profile picture element not found in HTML.");
                 }
             } else {
-                console.error("No such user document!");
+                console.log('No profile picture set for this user.');
             }
-        })
-        .catch((error) => {
-            console.error("Error getting user document:", error);
-        });
+        } else {
+            console.error("No such user document!");
+        }
+    }).catch((error) => {
+        console.error("Error getting user document:", error);
+    });
 }
 
+// Function to display user stats (username, roles, tokens)
 function displayStats() {
     const username = getCookie("username");
     const roles = getCookie("roles");
@@ -245,43 +210,102 @@ function displayStats() {
     }
 }
 
+// Function to check account status (e.g., ban status)
 function checkAccountStatus() {
     const username = getCookie("username");
     if (!username) return;
 
-    firestore.collection("users").doc(username).get()
-        .then((doc) => {
-            if (doc.exists) {
-                const userData = doc.data();
-                if (userData.ban) {
-                    clearCookies();
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Banned',
-                        text: 'You have been banned for: ' + userData.banReason
-                    }).then(() => {
-                        window.location.href = "login.html";
-                    });
-                }
-            } else {
+    const userRef = doc(firestore, "users", username);
+    getDoc(userRef).then((doc) => {
+        if (doc.exists()) {
+            const userData = doc.data();
+            if (userData.ban) {
                 clearCookies();
                 Swal.fire({
                     icon: 'error',
-                    title: 'User Not Found',
-                    text: 'User does not exist.'
+                    title: 'Banned',
+                    text: 'You have been banned for: ' + userData.banReason
                 }).then(() => {
-                    window.location.href = "login.html";
+                    window.location.href = "login.html"; // Redirect to login page
                 });
             }
-        })
-        .catch((error) => {
-            console.error("Error checking account status:", error);
-        });
+        } else {
+            clearCookies();
+            Swal.fire({
+                icon: 'error',
+                title: 'User Not Found',
+                text: 'User does not exist.'
+            }).then(() => {
+                window.location.href = "login.html"; // Redirect to login page
+            });
+        }
+    }).catch((error) => {
+        console.error("Error checking account status:", error);
+    });
 }
 
+// Function to clear all cookies
 function clearCookies() {
     setCookie("username", "", -1);
     setCookie("roles", "", -1);
     setCookie("tokens", "", -1);
 }
 
+// Fetch and display badges function
+async function fetchBadges() {
+    const username = getCookie("username");
+    if (!username) {
+        console.error("Username is not set in cookies.");
+        return;
+    }
+
+    try {
+        const userRef = doc(firestore, "users", username);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const badges = userData.badges;
+
+            const badgeContainer = document.getElementById("badgeContainer");
+            const noBadgesMessage = document.getElementById("noBadgesMessage");
+
+            if (Array.isArray(badges) && badges.length > 0) {
+                badges.forEach(badgeUrl => {
+                    const badgeDiv = document.createElement("div");
+                    badgeDiv.className = "badge";
+                    const badgeImg = document.createElement("img");
+                    badgeImg.src = badgeUrl;
+                    badgeDiv.appendChild(badgeImg);
+                    badgeContainer.appendChild(badgeDiv);
+                });
+            } else {
+                noBadgesMessage.style.display = "block";
+            }
+        } else {
+            console.error("User document not found.");
+        }
+    } catch (error) {
+        console.error("Error fetching badges:", error);
+    }
+}
+
+// Initialize function to setup the page
+function initializePage() {
+    displayProfilePicture();
+    displayStats();
+    checkAccountStatus();
+    fetchBadges();
+}
+
+// Call initializePage() when the page is loaded
+window.onload = function() {
+    initializePage();
+};
+
+// Example usage: Add event listeners to buttons or elements in your HTML
+document.getElementById("buyChestButton").addEventListener("click", buyChest);
+document.getElementById("updateProfilePictureButton").addEventListener("click", function() {
+    const imageSrc = document.getElementById("newProfilePicture").value;
+    updateProfilePicture(imageSrc);
+});

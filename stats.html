@@ -364,19 +364,10 @@
         </div>
             <a href="Plus.html"><div  style=" margin-top: -250px; margin-left: 325px;" class="ban_container" >Store</div></a>
             <a href="AddInfo.html"><div  style=" margin-top: -250px; margin-left: 430px;" class="ban_container" >claim tokens</div></a>
-           
-        <script>
-          // Select the element by its ID
-var usernameElement = document.getElementById("username");
 
-// Set its text-align property to center
-usernameElement.style.textAlign = "center";
-
-// Remove the margin-left property to ensure it's centered properly
-usernameElement.style.marginLeft = "auto";
-usernameElement.style.marginRight = "auto";
-
-                 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js";
+        <script type="module">
+        // Import the required Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js";
         
         // Your Firebase configuration
@@ -449,6 +440,19 @@ usernameElement.style.marginRight = "auto";
 
         // Fetch and display badges on page load
         window.onload = fetchBadges;
+    </script>
+        <script>
+          // Select the element by its ID
+var usernameElement = document.getElementById("username");
+
+// Set its text-align property to center
+usernameElement.style.textAlign = "center";
+
+// Remove the margin-left property to ensure it's centered properly
+usernameElement.style.marginLeft = "auto";
+usernameElement.style.marginRight = "auto";
+
+
       </script>
         
     </body>

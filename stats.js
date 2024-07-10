@@ -1,16 +1,76 @@
-const firebaseConfig = {
-apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
-  authDomain: "cosmik-7c124.firebaseapp.com",
-  databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
-  projectId: "cosmik-7c124",
-  storageBucket: "cosmik-7c124.appspot.com",
-  messagingSenderId: "412506429662",
-  appId: "1:412506429662:web:9ca3e17199297df7384a4f",
-  measurementId: "G-R7K0LTHCK3"
-};
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js";
+        
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+            authDomain: "cosmik-7c124.firebaseapp.com",
+            databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
+            projectId: "cosmik-7c124",
+            storageBucket: "cosmik-7c124.appspot.com",
+            messagingSenderId: "412506429662",
+            appId: "1:412506429662:web:9ca3e17199297df7384a4f",
+            measurementId: "G-R7K0LTHCK3"
+        };
 
-firebase.initializeApp(firebaseConfig);
-const firestore = firebase.firestore();
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Function to get a cookie by name
+        function getCookie(name) {
+            let cookieArr = document.cookie.split(";");
+            for (let i = 0; i < cookieArr.length; i++) {
+                let cookiePair = cookieArr[i].split("=");
+                if (name == cookiePair[0].trim()) {
+                    return decodeURIComponent(cookiePair[1]);
+                }
+            }
+            return null;
+        }
+
+        // Get the username from cookies
+        const username = getCookie("username");
+        console.log("Username from cookies:", username);
+
+        // Function to fetch and display badges
+        async function fetchBadges() {
+            if (username) {
+                try {
+                    const userDocRef = doc(db, "users", username);
+                    const userDoc = await getDoc(userDocRef);
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        const badges = userData.badges;
+                        console.log("Badges found:", badges);
+                        const badgeContainer = document.getElementById("badgeContainer");
+                        const noBadgesMessage = document.getElementById("noBadgesMessage");
+
+                        if (Array.isArray(badges) && badges.length > 0) {
+                            badges.forEach(badgeUrl => {
+                                const badgeDiv = document.createElement("div");
+                                badgeDiv.className = "badge";
+                                const badgeImg = document.createElement("img");
+                                badgeImg.src = badgeUrl;
+                                badgeDiv.appendChild(badgeImg);
+                                badgeContainer.appendChild(badgeDiv);
+                            });
+                        } else {
+                            noBadgesMessage.style.display = "block";
+                        }
+                    } else {
+                        console.log("No such user document!");
+                    }
+                } catch (error) {
+                    console.error("Error fetching user document:", error);
+                }
+            } else {
+                console.log("Username not found in cookies.");
+            }
+        }
+
+        // Fetch and display badges on page load
+        window.onload = fetchBadges;
 
 function getCookie(name) {
     const cname = name + "=";

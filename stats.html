@@ -375,6 +375,53 @@ usernameElement.style.marginLeft = "auto";
 usernameElement.style.marginRight = "auto";
 
                   document.addEventListener("DOMContentLoaded", function() {
+                        function getCookie(name) {
+            let cookieArr = document.cookie.split(";");
+            for (let i = 0; i < cookieArr.length; i++) {
+                let cookiePair = cookieArr[i].split("=");
+                if (name == cookiePair[0].trim()) {
+                    return decodeURIComponent(cookiePair[1]);
+                }
+            }
+            return null;
+        }
+
+        // Get the username from cookies
+        const username = getCookie("username");
+
+        // Function to fetch and display badges
+        async function fetchBadges() {
+            if (username) {
+                const userDocRef = doc(db, "users", username);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const badges = userData.badges;
+                    const badgeContainer = document.getElementById("badgeContainer");
+                    const noBadgesMessage = document.getElementById("noBadgesMessage");
+
+                    if (Array.isArray(badges) && badges.length > 0) {
+                        badges.forEach(badgeUrl => {
+                            const badgeDiv = document.createElement("div");
+                            badgeDiv.className = "badge";
+                            const badgeImg = document.createElement("img");
+                            badgeImg.src = badgeUrl;
+                            badgeDiv.appendChild(badgeImg);
+                            badgeContainer.appendChild(badgeDiv);
+                        });
+                    } else {
+                        noBadgesMessage.style.display = "block";
+                    }
+                } else {
+                    console.log("No such user document!");
+                }
+            } else {
+                console.log("Username not found in cookies.");
+            }
+        }
+
+        // Fetch and display badges on page load
+        window.onload = fetchBadges;
       </script>
         
     </body>

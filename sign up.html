@@ -11,7 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <title>Login | Anolet</title>
     <style>
-        .topBar {
+ .topBar {
             position: absolute;
             width: 100vw;
             height: 55px;
@@ -221,8 +221,7 @@
             width: 50px;
             height: 50px;
             margin: 0 5px;
-        }
-    </style>
+        }    </style>
     <link rel="icon" type="image/x-icon" href="favicon_img.png">
 </head>
 <body style="background-color: #336c4c; overflow: hidden;">
@@ -232,15 +231,17 @@
         <a class="logo_link logo_link1" href="index.html">Anolet</a>
     </div>
     <div>
-        <a class="signUp_link" href="sign up.html">Sign up</a>
+        <a class="signUp_link" href="login.html">Login</a>
     </div>
     <div class="login_container">
         <div class="loginForm">
-            <div class="login_header">Sign in</div>
+            <div class="login_header">sign up</div>
             <form onsubmit="event.preventDefault(); login();">
                 <div class="login_username">
-                    <svg aria-hidden="true" class="user_icon" focusable="false" data-prefix="fas" width="22px" height="45" data-icon="user" role="img" viewBox="0 0 448 512"></svg>
-                    <input id="username" type="text" class="login_username_input" placeholder="Username" maxlength="30">
+                    <svg aria-hidden="true" class="user_icon" focusable="false" data-prefix="fas" width="22px" height="45" data-icon="user" role="img" viewBox="0 0 448 512">
+                        <path fill="#2e8461" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                    </svg>
+                    <input id="username" type="text" class="login_username_input" placeholder="Username" maxlength="16">
                 </div>
                 <div class="login_password">
                     <svg aria-hidden="true" class="user_icon" focusable="false" data-prefix="fas" width="22px" height="45" data-icon="user" role="img" viewBox="0 0 448 512">
@@ -248,28 +249,18 @@
                     </svg>
                     <input type="password" id="password" class="login_password_input" placeholder="Password" maxlength="16">
                 </div>
-                <button style="display: none;" type="submit" class="login_submit">sign up</button>
             </form>
-
-<div>
-    <button onclick="login()" class="login_submit">login</button>
-
-</div>
-
-
-
-
+            <button onclick="createAccount()" type="submit" class="login_submit">Sign up</button>
             <div class="bottom_login_text">
-                 dont have an account?
-                <a class="logo_link1" href="sign up.html">Sign up</a> instead.
+                 have an account?
+                <a class="logo_link1" href="login.html">Sign in</a> instead.
             </div>
         </div>
         <p id="error-message" style="margin-top: 225px; margin-right: -25px; color: red; border-color: red; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 17px;"></p>
     </div>
-    
     <div class="bottom_fade"></div>
     <script>
-       // Firebase configuration
+      // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
     authDomain: "cosmik-7c124.firebaseapp.com",
@@ -307,10 +298,10 @@ function getCookie(name) {
     return "";
 }
 
-async function createAccount() {
+function createAccount() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
-    var profilePicture = "Owner.png";
+    var profilePicture = "Cosmik.png";
 
     if (/[^a-zA-Z0-9]/.test(username)) {
         Swal.fire({
@@ -321,83 +312,89 @@ async function createAccount() {
         return;
     }
 
-    try {
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(username + "@example.com", password);
-        const user = userCredential.user;
-        await firestore.collection("users").doc(username).set({
-            badges: [],
-            tokens: 0,
-            roles: [],
-            accepted: false,
-            profilePicture: profilePicture,
-            unlockedSkins: [],
-            ban: false,
-            banReason: "",
-            panelAccess: false,
-            showAnimation: true,
-            password: password // Store the password in Firestore
+    firebase.auth().createUserWithEmailAndPassword(username + "@example.com", password)
+        .then((userCredential) => {
+            var user = userCredential.user;
+            firestore.collection("users").doc(username).set({
+                badges: [],
+                tokens: 4500,
+                roles: [],
+                accepted: true,
+                profilePicture: profilePicture,
+                unlockedSkins: [],
+                ban: false,
+                banReason: "",
+                panelAccess: false,
+                showAnimation: true,
+                password: password // Store the password directly
+            }).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account Created',
+                    text: 'Please Sign in Now'
+                }).then(() => {
+                    window.location.href = "login.html"; // Redirect to login page
+                });
+            }).catch((error) => {
+                console.error("Error adding document: ", error);
+            });
+        })
+        .catch((error) => {
+            var errorMessage = error.message;
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage
+            });
         });
-        Swal.fire({
-            icon: 'success',
-            title: 'Account Created',
-            text: 'Your account has been created and is awaiting approval.'
-        }).then(() => {
-            window.location.href = "login.html"; // Redirect to login page
-        });
-    } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.message
-        });
-    }
 }
 
-async function login() {
+function login() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
 
-    try {
-        const doc = await firestore.collection("users").doc(username).get();
-        if (doc.exists) {
-            const userData = doc.data();
-            if (userData.ban) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Banned',
-                    text: 'You are banned for ' + userData.banReason
-                });
-            } else {
-                // Compare stored password with entered password
-                if (password === userData.password) {
-                    setCookie("username", username, 1); // Set the cookie for 1 day
-                    setCookie("roles", userData.roles.join(','), 1); // Set the roles cookie
-                    setCookie("tokens", userData.tokens, 1); // Set the tokens cookie
-                    window.location.href = `stats.html`;
-                } else {
+    firestore.collection("users").doc(username).get()
+        .then((doc) => {
+            if (doc.exists) {
+                const userData = doc.data();
+                if (userData.ban) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Authentication Failed',
-                        text: 'Invalid username or password.'
+                        title: 'Banned',
+                        text: 'You are banned for ' + userData.banReason
                     });
+                } else {
+                    // Compare stored password with entered password
+                    if (password === userData.password) {
+                        setCookie("username", username, 1); // Set the cookie for 1 day
+                        setCookie("roles", userData.roles.join(','), 1); // Set the roles cookie
+                        setCookie("tokens", userData.tokens, 1); // Set the tokens cookie
+                        window.location.href = `stats.html`;
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Authentication Failed',
+                            text: 'Invalid username or password.'
+                        });
+                    }
                 }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'User Not Found',
+                    text: 'User does not exist.'
+                });
             }
-        } else {
+        })
+        .catch((error) => {
+            console.error("Error getting document:", error);
             Swal.fire({
                 icon: 'error',
-                title: 'User Not Found',
-                text: 'User does not exist.'
+                title: 'Error',
+                text: 'Failed to retrieve user data. Please try again later.'
             });
-        }
-    } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to retrieve user data. Please try again later.'
         });
-    }
 }
-
 
     </script>
 </body>

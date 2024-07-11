@@ -241,18 +241,10 @@ function displayMessage(messageData) {
     chatMessages.appendChild(messageDiv);
 }
 
-function displayBadge(badgeImageUrl) {
-    const badgeImg = document.createElement('img');
-    badgeImg.src = badgeImageUrl;
-    badgeImg.alt = 'Badge Image';
-    badgeImg.style.width = '45px'; // Set badge width to 45px
-    document.body.appendChild(badgeImg); // Append the badge image to the body or desired element
-}
 onChildAdded(messagesRef, (snapshot) => {
     const messageData = snapshot.val();
     displayMessage(messageData);
 });
-
 </script>
 
 

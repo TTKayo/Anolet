@@ -102,136 +102,150 @@
             <button id="send-button">Send</button>
         </div>
         <script type="module">
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-            import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
-            import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+          import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-            const firebaseConfig = {
-                apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
-                authDomain: "cosmik-7c124.firebaseapp.com",
-                databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
-                projectId: "cosmik-7c124",
-                storageBucket: "cosmik-7c124.appspot.com",
-                messagingSenderId: "412506429662",
-                appId: "1:412506429662:web:9ca3e17199297df7384a4f",
-                measurementId: "G-R7K0LTHCK3"
-            };
+const firebaseConfig = {
+    apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+    authDomain: "cosmik-7c124.firebaseapp.com",
+    databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
+    projectId: "cosmik-7c124",
+    storageBucket: "cosmik-7c124.appspot.com",
+    messagingSenderId: "412506429662",
+    appId: "1:412506429662:web:9ca3e17199297df7384a4f",
+    measurementId: "G-R7K0LTHCK3"
+};
 
-            const app = initializeApp(firebaseConfig);
-            const database = getDatabase(app);
-            const firestore = getFirestore(app);
-            const messagesRef = ref(database, 'messages');
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+const firestore = getFirestore(app);
+const messagesRef = ref(database, 'messages');
 
-            const chatMessages = document.getElementById('chat-messages');
-            const messageInput = document.getElementById('message-input');
-            const sendButton = document.getElementById('send-button');
+const chatMessages = document.getElementById('chat-messages');
+const messageInput = document.getElementById('message-input');
+const sendButton = document.getElementById('send-button');
 
-            function deleteAllMessages() {
-                remove(messagesRef).then(() => {
-                    console.log("All messages deleted.");
-                    chatMessages.innerHTML = '';
-                }).catch((error) => {
-                    console.error("Error deleting messages:", error);
+function deleteAllMessages() {
+    remove(messagesRef).then(() => {
+        console.log("All messages deleted.");
+        chatMessages.innerHTML = '';
+    }).catch((error) => {
+        console.error("Error deleting messages:", error);
+    });
+}
+
+async function getUserBadges(username) {
+    const userDoc = await getDoc(doc(firestore, 'users', username));
+    if (userDoc.exists()) {
+        const badges = userDoc.data().badges || [];
+        return badges.map(badgeUrl => `<img src="${badgeUrl}" alt="Badge" class="badge">`).join('');
+    } else {
+        console.log("No such document!");
+        return '';
+    }
+}
+
+async function sendMessage() {
+    const message = messageInput.value.trim();
+    if (message !== '') {
+        const username = getCookie('username');
+        const roles = getCookie('roles');
+
+        if (username && roles) {
+            // Retrieve the profile picture URL and badges from Firestore
+            const userDoc = await getDoc(doc(firestore, 'users', username));
+            const profilePicture = userDoc.exists() ? userDoc.data().profilePicture : '';
+            const badgesHtml = await getUserBadges(username);
+
+            if (message.startsWith('/ban')) {
+                if (['Helper', 'Admin', 'Mod', 'Owner'].includes(roles)) {
+                    const targetUser = message.split(' ')[1];
+                    displaySystemMessage(`${username} (${roles}) has banned ${targetUser}`);
+                } else {
+                    displaySystemMessage(`You do not have permission to use this command.`);
+                }
+            } else if (message.startsWith('/tokens')) {
+                const targetUser = message.split(' ')[1];
+                if (targetUser) {
+                    displaySystemMessage(`Requested tokens for ${targetUser}`);
+                } else {
+                    displaySystemMessage("Please specify a user.");
+                }
+            } else if (message.startsWith('/user')) {
+                const targetUser = message.split(' ')[1];
+                if (targetUser) {
+                    displaySystemMessage(`Requested info for ${targetUser}`);
+                } else {
+                    displaySystemMessage("Please specify a user.");
+                }
+            } else if (message.startsWith('/Dchat') && roles === 'Owner') {
+                deleteAllMessages();
+                displaySystemMessage(`All messages have been deleted by ${username} (${roles}).`);
+            } else {
+                push(messagesRef, {
+                    username: username,
+                    roles: roles,
+                    message: message,
+                    profilePicture: profilePicture,
+                    badges: badgesHtml,
+                    timestamp: new Date().toISOString()
                 });
             }
+            messageInput.value = '';
+        } else {
+            console.error("Username or roles not found in cookies.");
+        }
+    }
+}
 
-            async function sendMessage() {
-                const message = messageInput.value.trim();
-                if (message !== '') {
-                    const username = getCookie('username');
-                    const roles = getCookie('roles');
+function displaySystemMessage(message) {
+    const systemMessageDiv = document.createElement('div');
+    systemMessageDiv.textContent = message;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    systemMessageDiv.style.color = 'red';
+    chatMessages.appendChild(systemMessageDiv);
+}
 
-                    if (username && roles) {
-                        // Retrieve the profile picture URL from Firestore
-                        const userDoc = await getDoc(doc(firestore, 'users', username));
-                        const profilePicture = userDoc.exists() ? userDoc.data().profilePicture : '';
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
-                        if (message.startsWith('/ban')) {
-                            if (['Helper', 'Admin', 'Mod', 'Owner'].includes(roles)) {
-                                const targetUser = message.split(' ')[1];
-                                displaySystemMessage(`${username} (${roles}) has banned ${targetUser}`);
-                            } else {
-                                displaySystemMessage(`You do not have permission to use this command.`);
-                            }
-                        } else if (message.startsWith('/tokens')) {
-                            const targetUser = message.split(' ')[1];
-                            if (targetUser) {
-                                displaySystemMessage(`Requested tokens for ${targetUser}`);
-                            } else {
-                                displaySystemMessage("Please specify a user.");
-                            }
-                        } else if (message.startsWith('/user')) {
-                            const targetUser = message.split(' ')[1];
-                            if (targetUser) {
-                                displaySystemMessage(`Requested info for ${targetUser}`);
-                            } else {
-                                displaySystemMessage("Please specify a user.");
-                            }
-                        } else if (message.startsWith('/Dchat') && roles === 'Owner') {
-                            deleteAllMessages();
-                            displaySystemMessage(`All messages have been deleted by ${username} (${roles}).`);
-                        } else {
-                            push(messagesRef, {
-                                username: username,
-                                roles: roles,
-                                message: message,
-                                profilePicture: profilePicture,
-                                timestamp: new Date().toISOString()
-                            });
-                        }
-                        messageInput.value = '';
-                    } else {
-                        console.error("Username or roles not found in cookies.");
-                    }
-                }
-            }
+sendButton.addEventListener('click', sendMessage);
+messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
 
-            function displaySystemMessage(message) {
-                const systemMessageDiv = document.createElement('div');
-                systemMessageDiv.textContent = message;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                systemMessageDiv.style.color = 'red';
-                chatMessages.appendChild(systemMessageDiv);
-            }
+function displayMessage(messageData) {
+    const messageDiv = document.createElement('div');
+    messageDiv.style.display = 'flex';
+    messageDiv.style.alignItems = 'center';
 
-            function getCookie(name) {
-                const value = `; ${document.cookie}`;
-                const parts = value.split(`; ${name}=`);
-                if (parts.length === 2) return parts.pop().split(';').shift();
-            }
+    const profileImg = document.createElement('img');
+    profileImg.src = messageData.profilePicture || 'default_profile_picture_url';
+    profileImg.alt = `${messageData.username}'s profile picture`;
+    profileImg.style.width = '65px';
+    profileImg.style.height = '70px';
+    profileImg.style.marginRight = '10px';
 
-            sendButton.addEventListener('click', sendMessage);
-            messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
+    const messageText = document.createElement('div');
+    messageText.innerHTML = `${messageData.username} (${messageData.roles}): ${messageData.message} ${messageData.badges}`;
 
-            function displayMessage(messageData) {
-                const messageDiv = document.createElement('div');
-                messageDiv.style.display = 'flex';
-                messageDiv.style.alignItems = 'center';
+    messageDiv.appendChild(profileImg);
+    messageDiv.appendChild(messageText);
 
-                const profileImg = document.createElement('img');
-                profileImg.src = messageData.profilePicture || 'default_profile_picture_url';
-profileImg.alt = `${messageData.username}'s profile picture`;
-                profileImg.style.width = '65px';
-                profileImg.style.height = '70px';
-                profileImg.style.marginRight = '10px';
+    chatMessages.appendChild(messageDiv);
+}
 
-                const messageText = document.createElement('div');
-                messageText.textContent = `${messageData.username} (${messageData.roles}): ${messageData.message}`;
+onChildAdded(messagesRef, (snapshot) => {
+    const messageData = snapshot.val();
+    displayMessage(messageData);
+});
 
-                messageDiv.appendChild(profileImg);
-                messageDiv.appendChild(messageText);
-
-                chatMessages.appendChild(messageDiv);
-            }
-
-            onChildAdded(messagesRef, (snapshot) => {
-                const messageData = snapshot.val();
-                displayMessage(messageData);
-            });
 </script>
 
 

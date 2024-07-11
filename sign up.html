@@ -298,10 +298,10 @@ function getCookie(name) {
     return "";
 }
 
-function createAccount() {
+async function createAccount() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
-    var profilePicture = "Cosmik.png";
+    var profilePicture = "Owner.png";
 
     if (/[^a-zA-Z0-9]/.test(username)) {
         Swal.fire({
@@ -312,41 +312,36 @@ function createAccount() {
         return;
     }
 
-    firebase.auth().createUserWithEmailAndPassword(username + "@example.com", password)
-        .then((userCredential) => {
-            var user = userCredential.user;
-            firestore.collection("users").doc(username).set({
-                badges: [],
-                tokens: 4500,
-                roles: [],
-                accepted: true,
-                profilePicture: profilePicture,
-                unlockedSkins: [],
-                ban: false,
-                banReason: "",
-                panelAccess: false,
-                showAnimation: true,
-                password: password // Store the password directly
-            }).then(() => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Account Created',
-                    text: 'Please Sign in Now'
-                }).then(() => {
-                    window.location.href = "login.html"; // Redirect to login page
-                });
-            }).catch((error) => {
-                console.error("Error adding document: ", error);
-            });
-        })
-        .catch((error) => {
-            var errorMessage = error.message;
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: errorMessage
-            });
+    try {
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(username + "@example.com", password);
+        const user = userCredential.user;
+        await firestore.collection("users").doc(username).set({
+            badges: [],
+            tokens: 0,
+            roles: [],
+            accepted: false,
+            profilePicture: profilePicture,
+            unlockedSkins: [],
+            ban: false,
+            banReason: "",
+            panelAccess: false,
+            showAnimation: true,
+            password: password // Store the password in Firestore
         });
+        Swal.fire({
+            icon: 'success',
+            title: 'Account Created',
+            text: 'Your account has been created and is awaiting approval.'
+        }).then(() => {
+            window.location.href = "login.html"; // Redirect to login page
+        });
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message
+        });
+    }
 }
 
 function login() {

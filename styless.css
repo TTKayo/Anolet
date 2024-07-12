@@ -205,29 +205,7 @@
     overflow: hidden;
     overflow-x: hidden;
 }
-.button {
-    background-color: #3cb383;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 25px;
-    margin: 4px 2px;
-    transition-duration: 0.4s;
-    cursor: pointer;
-    border-radius: 8px;
-    font-family: Nunito, sans-serif;
-    height: 6vh;
-    width: 18vh;
-    line-height: 6vh;
-    box-shadow: 0px -5px rgba(43, 39, 39, 0.2) inset, 0px 0px 4px rgba(0, 0, 0, 0.15);
-    text-align: center;
-    margin-right: 5vw;
-    position: absolute;
-    top: 20px;
-    left: 70%;
-    vertical-align: middle;
-}
+
   button {
             background-color: #56ab2f;
             border: none;

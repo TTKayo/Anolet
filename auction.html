@@ -136,11 +136,29 @@
                     const price = parseInt(result.value, 10);
                     const username = getCookie("username");
 
-                    firestore.collection("auctions").add({
-                        seller: username,
-                        skin: skin,
-                        price: price,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    firestore.runTransaction(async (transaction) => {
+                        const userDoc = await transaction.get(firestore.collection("users").doc(username));
+                        if (!userDoc.exists) {
+                            throw new Error("User does not exist.");
+                        }
+
+                        const userData = userDoc.data();
+                        const unlockedSkins = userData.unlockedSkins || [];
+
+                        if (!unlockedSkins.includes(skin)) {
+                            throw new Error("Skin is not in user's inventory.");
+                        }
+
+                        transaction.update(firestore.collection("users").doc(username), {
+                            unlockedSkins: firebase.firestore.FieldValue.arrayRemove(skin)
+                        });
+
+                        transaction.set(firestore.collection("auctions").doc(), {
+                            seller: username,
+                            skin: skin,
+                            price: price,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
                     }).then(() => {
                         Swal.fire({
                             icon: 'success',
@@ -167,6 +185,7 @@
                             <p>Price: ${data.price} tokens</p>
                             <p>Seller: ${data.seller}</p>
                             <button onclick="buySkin('${doc.id}', ${data.price}, '${data.seller}')">Buy</button>
+                            ${data.seller === getCookie("username") ? `<button onclick="removeAuction('${doc.id}', '${data.skin}')">Remove</button>` : ''}
                         `;
                         container.appendChild(listing);
                     });
@@ -231,6 +250,40 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Purchase Failed',
+                    text: error.message
+                });
+            });
+        }
+
+        function removeAuction(auctionId, skin) {
+            const username = getCookie("username");
+
+            firestore.runTransaction(async (transaction) => {
+                const auctionDoc = await transaction.get(firestore.collection("auctions").doc(auctionId));
+                if (!auctionDoc.exists) {
+                    throw new Error("Auction does not exist.");
+                }
+
+                const auctionData = auctionDoc.data();
+                if (auctionData.seller !== username) {
+                    throw new Error("You are not the seller of this auction.");
+                }
+
+                transaction.delete(firestore.collection("auctions").doc(auctionId));
+                transaction.update(firestore.collection("users").doc(username), {
+                    unlockedSkins: firebase.firestore.FieldValue.arrayUnion(skin)
+                });
+            }).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Auction Removed',
+                    text: 'The auction has been removed and the skin has been returned to your inventory.'
+                });
+            }).catch((error) => {
+                console.error("Error removing auction: ", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Remove Failed',
                     text: error.message
                 });
             });

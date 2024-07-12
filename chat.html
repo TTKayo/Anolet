@@ -223,7 +223,32 @@ messageInput.addEventListener('keypress', (e) => {
         sendMessage();
     }
 });
+document.addEventListener('DOMContentLoaded', () => {
+        const chatContainer = document.getElementById('chat-container');
+        scrollToBottom(chatContainer);
 
+        document.getElementById('send-message').addEventListener('click', () => {
+            const messageInput = document.getElementById('message-input');
+            const messageText = messageInput.value;
+            if (messageText.trim()) {
+                addMessage(messageText);
+                messageInput.value = '';
+            }
+        });
+    });
+
+    function addMessage(text) {
+        const chatContainer = document.getElementById('chat-container');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        messageElement.textContent = text;
+        chatContainer.appendChild(messageElement);
+        scrollToBottom(chatContainer);
+    }
+
+    function scrollToBottom(container) {
+        container.scrollTop = container.scrollHeight;
+    }
 function displayMessage(messageData) {
     const messageDiv = document.createElement('div');
     messageDiv.style.display = 'flex';

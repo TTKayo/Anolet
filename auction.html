@@ -165,15 +165,25 @@
                         listing.innerHTML = `
                             <img src="${data.skin}" class="badge">
                             <p>Price: ${data.price} tokens</p>
-                            <button onclick="buySkin('${doc.id}', ${data.price})">Buy</button>
+                            <p>Seller: ${data.seller}</p>
+                            <button onclick="buySkin('${doc.id}', ${data.price}, '${data.seller}')">Buy</button>
                         `;
                         container.appendChild(listing);
                     });
                 });
         }
 
-        function buySkin(auctionId, price) {
+        function buySkin(auctionId, price, seller) {
             const username = getCookie("username");
+
+            if (username === seller) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Purchase Failed',
+                    text: "You cannot buy your own auction."
+                });
+                return;
+            }
 
             firestore.runTransaction(async (transaction) => {
                 const auctionDoc = await transaction.get(firestore.collection("auctions").doc(auctionId));

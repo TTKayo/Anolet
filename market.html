@@ -229,8 +229,74 @@
         <img href="https://ac.blooket.com/dashboard/a6f9290f2a3ed1141124bb8982a51fe8.png">
     </div>
         <script src="market.js"></script>
-     <script>
-           
+    <script>
+
+        
+          let ownerMode = false;
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        function toggleChest() {
+            const chestContainer = document.querySelector('.chest-container');
+            chestContainer.classList.toggle('clicked');
+
+            const imagesContainer = document.getElementById('unlocked-images');
+            if (imagesContainer.children.length === 0) {
+                // Fetch images from Firestore
+                db.collection('images').get().then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        const img = document.createElement('img');
+                        img.src = doc.data().url;
+                        imagesContainer.appendChild(img);
+                    });
+                });
+            }
+        }
+
+        function createChest() {
+            const chestContainer = document.createElement('div');
+            chestContainer.className = 'chest-container';
+            chestContainer.onclick = toggleChest;
+
+            const chest = document.createElement('div');
+            chest.className = 'chest';
+            const lid = document.createElement('div');
+            lid.className = 'lid';
+
+            chest.appendChild(lid);
+            chestContainer.appendChild(chest);
+
+            const imagesContainer = document.createElement('div');
+            imagesContainer.className = 'images';
+            imagesContainer.id = 'unlocked-images-' + Date.now();
+
+            chestContainer.appendChild(imagesContainer);
+            document.body.appendChild(chestContainer);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'q' || e.key === 'Q') {
+                const role = getCookie('role');
+                if (role === 'Owner') {
+                    ownerMode = !ownerMode;
+                    if (ownerMode) {
+                        Swal.fire('Owner mode activated. Click to create chests.');
+                    } else {
+                        Swal.fire('Owner mode deactivated.');
+                    }
+                }
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (ownerMode && e.target === document.body) {
+                createChest();
+            }
+        });   
      </script>
     </body>
 </html>

@@ -165,27 +165,27 @@ async function sendMessage() {
             if (message.startsWith('/ban')) {
                 if (['Helper', 'Admin', 'Mod', 'Owner'].includes(roles)) {
                     const targetUser = message.split(' ')[1];
-                    displaySystemMessage(${username} (${roles}) has banned ${targetUser});
+                    displaySystemMessage(`${username} (${roles}) has banned ${targetUser}`);
                 } else {
-                    displaySystemMessage(You do not have permission to use this command.);
+                    displaySystemMessage("You do not have permission to use this command.");
                 }
             } else if (message.startsWith('/tokens')) {
                 const targetUser = message.split(' ')[1];
                 if (targetUser) {
-                    displaySystemMessage(Requested tokens for ${targetUser});
+                    displaySystemMessage(`Requested tokens for ${targetUser}`);
                 } else {
                     displaySystemMessage("Please specify a user.");
                 }
             } else if (message.startsWith('/user')) {
                 const targetUser = message.split(' ')[1];
                 if (targetUser) {
-                    displaySystemMessage(Requested info for ${targetUser});
+                    displaySystemMessage(`Requested info for ${targetUser}`);
                 } else {
                     displaySystemMessage("Please specify a user.");
                 }
             } else if (message.startsWith('/Dchat') && roles === 'Owner') {
                 deleteAllMessages();
-                displaySystemMessage(All messages have been deleted by ${username} (${roles}).);
+                displaySystemMessage(`All messages have been deleted by ${username} (${roles}).`);
             } else {
                 push(messagesRef, {
                     username: username,
@@ -203,6 +203,8 @@ async function sendMessage() {
     }
 }
 
+// Rest of the previous code...
+
 function displaySystemMessage(message) {
     const systemMessageDiv = document.createElement('div');
     systemMessageDiv.textContent = message;
@@ -212,8 +214,8 @@ function displaySystemMessage(message) {
 }
 
 function getCookie(name) {
-    const value = ; ${document.cookie};
-    const parts = value.split(; ${name}=);
+    const value = ` ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
@@ -231,13 +233,13 @@ function displayMessage(messageData) {
 
     const profileImg = document.createElement('img');
     profileImg.src = messageData.profilePicture || 'default_profile_picture_url';
-    profileImg.alt = ${messageData.username}'s profile picture;
+    profileImg.alt = `${messageData.username}'s profile picture`;
     profileImg.style.width = '65px';
     profileImg.style.height = '70px';
     profileImg.style.marginRight = '10px';
 
     const messageText = document.createElement('div');
-    messageText.innerHTML = ${messageData.username} (${messageData.roles}): ${messageData.message} ${messageData.badges};
+    messageText.innerHTML = `${messageData.username} (${messageData.roles}): ${messageData.message} ${messageData.badges}`;
 
     messageDiv.appendChild(profileImg);
     messageDiv.appendChild(messageText);

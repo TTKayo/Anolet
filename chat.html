@@ -12,12 +12,14 @@
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
         <title>Stats | Anolet</title>
         <style>
+    <style>
             .badge {
     width: 20px; /* Set badge width to 45px */
 }
 
                #chat-container { }
              #chat-messages {
+margin-left: 100px;
             max-height: 80vh;
             overflow-y: auto;
             margin: 20px auto;
@@ -26,7 +28,7 @@
             font-weight: 550;
             border-radius: 5px;
             font-size: 20px;
-            width: 80%;
+            width: 100%;
             padding: 10px;
         }
 
@@ -101,8 +103,8 @@
  </div>
              
         <div id="chat-container">
-            <div id="chat-messages" style="margin-top: 75px; margin-left: 300px; color: white; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-weight: 550; border-radius: 5px; font-size: 20px;"></div>
-            <input style="height: 70px; width: 1200px; margin-top: -50px; border-radius: 30px; font-weight: 1000; color: white; margin-left: 210px; background-color: rgb(30, 58, 30); border: none;" type="text" id="message-input" placeholder="Type your message...">
+            <div id="chat-messages" style="margin-top: 75px; margin-left: 215px; color: white; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-weight: 550; border-radius: 5px; font-size: 20px;"></div>
+            <input style="height: 70px; width: 1800px; margin-top: -50px; border-radius: 30px; font-weight: 1000; color: white; margin-left: 210px; background-color: rgb(30, 58, 30); border: none;" type="text" id="message-input" placeholder="Type your message...">
             <button id="send-button">Send</button>
         </div>
         <script type="module">

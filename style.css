@@ -552,7 +552,7 @@ button{
     font-family: Nunito, sans-serif;
 }
 .stats_banner {
-        margin-left: 225px;
+        margin-left: 300px;
         margin-top: 225px;
         width: 270px;
         height: 62px;
@@ -683,11 +683,11 @@ button{
 }
 
 .stats_container {
+    width: 500px;
     margin-top: -100px;
     margin-left: 500px;
     border-radius: 5px;
     box-shadow: 0 0 8px 3px rgba(0,0,0,.2);
-    width: 30%;
     height: 100px;
     padding: 10px 25px;
     left: 8.5vw;

@@ -144,12 +144,13 @@ async function getUserBadges(username) {
     const userDoc = await getDoc(doc(firestore, 'users', username));
     if (userDoc.exists()) {
         const badges = userDoc.data().badges || [];
-        return badges.map(badgeUrl => <img src="${badgeUrl}" alt="Badge" class="badge">).join('');
+        return badges.map(badgeUrl => `<img src="${badgeUrl}" alt="Badge" class="badge">`).join('');
     } else {
         console.log("No such document!");
         return '';
     }
 }
+
 
 async function sendMessage() {
     const message = messageInput.value.trim();

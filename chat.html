@@ -12,13 +12,12 @@
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
         <title>Stats | Anolet</title>
         <style>
-    <style>
             .badge {
-    width: 20px; 
+    width: 20px; /* Set badge width to 45px */
 }
 
                #chat-container { }
-              #chat-messages {
+             #chat-messages {
             max-height: 80vh;
             overflow-y: auto;
             margin: 20px auto;
@@ -102,8 +101,8 @@
  </div>
              
         <div id="chat-container">
-            <div id="chat-messages" style="margin-top: 75px; margin-left: 215px; color: white; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-weight: 550; border-radius: 5px; font-size: 20px;"></div>
-            <input style="height: 70px; width: 1800px; margin-top: -50px;  font-weight: 1000; color: white; margin-left: 210px; background-color: rgb(30, 58, 30); border: none;" type="text" id="message-input" placeholder="Type your message...">
+            <div id="chat-messages" style="margin-top: 75px; margin-left: 300px; color: white; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-weight: 550; border-radius: 5px; font-size: 20px;"></div>
+            <input style="height: 70px; width: 1200px; margin-top: -50px; border-radius: 30px; font-weight: 1000; color: white; margin-left: 210px; background-color: rgb(30, 58, 30); border: none;" type="text" id="message-input" placeholder="Type your message...">
             <button id="send-button">Send</button>
         </div>
         <script type="module">
@@ -144,7 +143,7 @@ async function getUserBadges(username) {
     const userDoc = await getDoc(doc(firestore, 'users', username));
     if (userDoc.exists()) {
         const badges = userDoc.data().badges || [];
-        return badges.map(badgeUrl => `<img src="${badgeUrl}" alt="Badge" class="badge">`).join('');
+        return badges.map(badgeUrl => <img src="${badgeUrl}" alt="Badge" class="badge">).join('');
     } else {
         console.log("No such document!");
         return '';
@@ -166,27 +165,27 @@ async function sendMessage() {
             if (message.startsWith('/ban')) {
                 if (['Helper', 'Admin', 'Mod', 'Owner'].includes(roles)) {
                     const targetUser = message.split(' ')[1];
-                    displaySystemMessage(`${username} (${roles}) has banned ${targetUser}`);
+                    displaySystemMessage(${username} (${roles}) has banned ${targetUser});
                 } else {
-                    displaySystemMessage(`You do not have permission to use this command.`);
+                    displaySystemMessage(You do not have permission to use this command.);
                 }
             } else if (message.startsWith('/tokens')) {
                 const targetUser = message.split(' ')[1];
                 if (targetUser) {
-                    displaySystemMessage(`Requested tokens for ${targetUser}`);
+                    displaySystemMessage(Requested tokens for ${targetUser});
                 } else {
                     displaySystemMessage("Please specify a user.");
                 }
             } else if (message.startsWith('/user')) {
                 const targetUser = message.split(' ')[1];
                 if (targetUser) {
-                    displaySystemMessage(`Requested info for ${targetUser}`);
+                    displaySystemMessage(Requested info for ${targetUser});
                 } else {
                     displaySystemMessage("Please specify a user.");
                 }
             } else if (message.startsWith('/Dchat') && roles === 'Owner') {
                 deleteAllMessages();
-                displaySystemMessage(`All messages have been deleted by ${username} (${roles}).`);
+                displaySystemMessage(All messages have been deleted by ${username} (${roles}).);
             } else {
                 push(messagesRef, {
                     username: username,
@@ -213,8 +212,8 @@ function displaySystemMessage(message) {
 }
 
 function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
+    const value = ; ${document.cookie};
+    const parts = value.split(; ${name}=);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
@@ -224,32 +223,7 @@ messageInput.addEventListener('keypress', (e) => {
         sendMessage();
     }
 });
-document.addEventListener('DOMContentLoaded', () => {
-        const chatContainer = document.getElementById('chat-container');
-        scrollToBottom(chatContainer);
 
-        document.getElementById('send-message').addEventListener('click', () => {
-            const messageInput = document.getElementById('message-input');
-            const messageText = messageInput.value;
-            if (messageText.trim()) {
-                addMessage(messageText);
-                messageInput.value = '';
-            }
-        });
-    });
-
-    function addMessage(text) {
-        const chatContainer = document.getElementById('chat-container');
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message');
-        messageElement.textContent = text;
-        chatContainer.appendChild(messageElement);
-        scrollToBottom(chatContainer);
-    }
-
-    function scrollToBottom(container) {
-        container.scrollTop = container.scrollHeight;
-    }
 function displayMessage(messageData) {
     const messageDiv = document.createElement('div');
     messageDiv.style.display = 'flex';
@@ -257,13 +231,13 @@ function displayMessage(messageData) {
 
     const profileImg = document.createElement('img');
     profileImg.src = messageData.profilePicture || 'default_profile_picture_url';
-    profileImg.alt = `${messageData.username}'s profile picture`;
+    profileImg.alt = ${messageData.username}'s profile picture;
     profileImg.style.width = '65px';
     profileImg.style.height = '70px';
     profileImg.style.marginRight = '10px';
 
     const messageText = document.createElement('div');
-    messageText.innerHTML = `${messageData.username} (${messageData.roles}): ${messageData.message} ${messageData.badges}`;
+    messageText.innerHTML = ${messageData.username} (${messageData.roles}): ${messageData.message} ${messageData.badges};
 
     messageDiv.appendChild(profileImg);
     messageDiv.appendChild(messageText);

@@ -167,7 +167,8 @@ async function sendMessage() {
             if (message.startsWith('/ban')) {
                 if (['Helper', 'Admin', 'Mod', 'Owner'].includes(roles)) {
                     const targetUser = message.split(' ')[1];
-Uncaught SyntaxError: missing ) after argument list (at chat.html:170:42)                } else {
+displaySystemMessage(`${username} (${roles}) has banned ${targetUser}`);
+               } else {
                     displaySystemMessage(You do not have permission to use this command.);
                 }
             } else if (message.startsWith('/tokens')) {

@@ -36,7 +36,29 @@
             }
         </style>
     </head>
-    <body style="background-color: #336c4c; overflow: hidden; font-family: Nunito, sans-serif;">
+   <body style="background-color: #336c4c; overflow: hidden; font-family: Nunito, sans-serif;"><img id="profile-picture" src="GamerYTRW.webp" alt="Profile Picture" style="display: block;">
+
+     <style>
+
+        img{
+            width: 50px;
+        }
+            .bg_img {
+                position: absolute;
+                width: 200%;
+                height: 200%;
+                top: 50%;
+                left: 50%;
+                z-index: -9999;
+                background-size: 550px;
+                background-position: -100px -100px;
+                background-image: url("https://ac.blooket.com/dashboard/assets/BlookCheckers-BykpA7vd.png");
+                transform: translate(-50%, -50%) rotate(15deg);
+                opacity: 0.1;
+            }
+        </style>
+    
+    
         <div class="token_container">
             <object data="token.svg" style="width: 27px; height: 27px; left: 0.5vw; position: absolute; top: 1vh; margin-right: 3vw; padding-left: 3px;"></object>
             <div style="padding-left: 2.5vw; margin-top: 7.5px; color: #fff" id="token_count">1,968</div>
@@ -63,19 +85,19 @@
                 <div class="blooks_text">
                     <a href="blooks.html" style="color:#fff; text-decoration: none;" class="link">Blooks</a>
                 </div>
-                <svg aria-hidden="true" focusable="false" class="blooks_icon" role="img"viewBox="0 0 512 512"><path fill="white" d="M176 56V96H336V56c0-4.4-3.6-8-8-8H184c-4.4 0-8 3.6-8 8zM128 96V56c0-30.9 25.1-56 56-56H328c30.9 0 56 25.1 56 56V96v32V480H128V128 96zM64 96H96V480H64c-35.3 0-64-28.7-64-64V160c0-35.3 28.7-64 64-64zM448 480H416V96h32c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64z"></path></svg>
+                <svg aria-hidden="true" focusable="false" class="blooks_icon" role="img" viewBox="0 0 512 512"><path fill="white" d="M176 56V96H336V56c0-4.4-3.6-8-8-8H184c-4.4 0-8 3.6-8 8zM128 96V56c0-30.9 25.1-56 56-56H328c30.9 0 56 25.1 56 56V96v32V480H128V128 96zM64 96H96V480H64c-35.3 0-64-28.7-64-64V160c0-35.3 28.7-64 64-64zM448 480H416V96h32c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64z"></path></svg>
             </div>
             <div class="market_selector">
                 <div class="market_text">
                     <a href="market.html" style="color:#fff; text-decoration: none;" class="link">Market</a>
                 </div>
-                <svg aria-hidden="true" focusable="false" class="market_icon" role="img"viewBox="0 0 576 512"><path fill="white" d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0H109.6C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9l-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3V384H128V250.6c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3V384v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V384 252.6c-4 1-8 1.8-12.3 2.3z"></path></svg>
+                <svg aria-hidden="true" focusable="false" class="market_icon" role="img" viewBox="0 0 576 512"><path fill="white" d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0H109.6C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9l-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3V384H128V250.6c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3V384v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V384 252.6c-4 1-8 1.8-12.3 2.3z"></path></svg>
             </div>
             <div class="puzzles_selector">
                 <div class="puzzles_text">
                     <a href="puzzles.html" style="color:#fff; text-decoration: none;" class="link">Puzzles</a>
                 </div>
-                <svg fill="#FFFFFF" viewBox="0 0 24 24" class="puzzles_icon"><path d="M 11.5 0 C 10.119 0 9 1.119 9 2.5 L 9 4 L 5 4 C 3.895 4 3 4.895 3 6 L 3 9 C 3 9.552 3.448 10 4 10 L 4.3574219 10 C 5.6654219 10 6.8553281 10.941188 6.9863281 12.242188 C 7.1363281 13.739187 5.966 15 4.5 15 L 4 15 C 3.448 15 3 15.448 3 16 L 3 19 C 3 20.105 3.895 21 5 21 L 8 21 C 8.552 21 9 20.552 9 20 L 9 19.642578 C 9 18.334578 9.9411875 17.144672 11.242188 17.013672 C 12.739187 16.863672 14 18.034 14 19.5 L 14 20 C 14 20.552 14.448 21 15 21 L 18 21 C 19.105 21 20 20.105 20 19 L 20 15 L 21.5 15 C 22.881 15 24 13.881 24 12.5 C 24 11.119 22.881 10 21.5 10 L 20 10 L 20 6 C 20 4.895 19.105 4 18 4 L 14 4 L 14 2.5 C 14 1.119 12.881 0 11.5 0 z"/></svg>
+                <svg fill="#FFFFFF" viewBox="0 0 24 24" class="puzzles_icon"><path d="M 11.5 0 C 10.119 0 9 1.119 9 2.5 L 9 4 L 5 4 C 3.895 4 3 4.895 3 6 L 3 9 C 3 9.552 3.448 10 4 10 L 4.3574219 10 C 5.6654219 10 6.8553281 10.941188 6.9863281 12.242188 C 7.1363281 13.739187 5.966 15 4.5 15 L 4 15 C 3.448 15 3 15.448 3 16 L 3 19 C 3 20.105 3.895 21 5 21 L 8 21 C 8.552 21 9 20.552 9 20 L 9 19.642578 C 9 18.334578 9.9411875 17.144672 11.242188 17.013672 C 12.739187 16.863672 14 18.034 14 19.5 L 14 20 C 14 20.552 14.448 21 15 21 L 18 21 C 19.105 21 20 20.105 20 19 L 20 15 L 21.5 15 C 22.881 15 24 13.881 24 12.5 C 24 11.119 22.881 10 21.5 10 L 20 10 L 20 6 C 20 4.895 19.105 4 18 4 L 14 4 L 14 2.5 C 14 1.119 12.881 0 11.5 0 z"></path></svg>
             </div>
             <div class="panel_selector">
                 <div class="panel_text">
@@ -85,12 +107,13 @@
             </div>
 
             <button onclick="logout()" class="logout_button" type="submit" style="top: 70%;">
-                <svg enable-background="new 0 0 52 52" height="20" viewBox="0 0 52 52" width="26px" class="logout_icon" stroke="white" stroke-width="2px" <g fill="#fff"><path d="m21 48.5v-3c0-.8-.7-1.5-1.5-1.5h-10c-.8 0-1.5-.7-1.5-1.5v-33c0-.8.7-1.5 1.5-1.5h10c.8 0 1.5-.7 1.5-1.5v-3c0-.8-.7-1.5-1.5-1.5h-13.5c-2.2 0-4 1.8-4 4v40c0 2.2 1.8 4 4 4h13.5c.8 0 1.5-.7 1.5-1.5z"/><path d="m49.6 27c.6-.6.6-1.5 0-2.1l-13.5-13.5c-.6-.6-1.5-.6-2.1 0l-2.1 2.1c-.6.6-.6 1.5 0 2.1l5.6 5.6c.6.6.2 1.7-.7 1.7h-21.3c-.8 0-1.5.6-1.5 1.4v3c0 .8.7 1.6 1.5 1.6h21.2c.9 0 1.3 1.1.7 1.7l-5.6 5.6c-.6.6-.6 1.5 0 2.1l2.1 2.1c.6.6 1.5.6 2.1 0z"/></g></svg>
+                <svg enable-background="new 0 0 52 52" height="20" viewBox="0 0 52 52" width="26px" class="logout_icon" stroke="white" stroke-width="2px" <g="" fill="#fff"><path d="m21 48.5v-3c0-.8-.7-1.5-1.5-1.5h-10c-.8 0-1.5-.7-1.5-1.5v-33c0-.8.7-1.5 1.5-1.5h10c.8 0 1.5-.7 1.5-1.5v-3c0-.8-.7-1.5-1.5-1.5h-13.5c-2.2 0-4 1.8-4 4v40c0 2.2 1.8 4 4 4h13.5c.8 0 1.5-.7 1.5-1.5z"></path><path d="m49.6 27c.6-.6.6-1.5 0-2.1l-13.5-13.5c-.6-.6-1.5-.6-2.1 0l-2.1 2.1c-.6.6-.6 1.5 0 2.1l5.6 5.6c.6.6.2 1.7-.7 1.7h-21.3c-.8 0-1.5.6-1.5 1.4v3c0 .8.7 1.6 1.5 1.6h21.2c.9 0 1.3 1.1.7 1.7l-5.6 5.6c-.6.6-.6 1.5 0 2.1l2.1 2.1c.6.6 1.5.6 2.1 0z"></path></svg>
             </button>
-        <div class="blooks_great_container">
-            <div id="unlocked-images" ></div>
+        
+<div class="blooks_great_container">______________________________________________________
+Unlocked Blooks<div id="unlocked-images"><img src="Ghost.png" class="badge"><img src="Hawkmrg.webp" class="badge"><img src="GamerYTRW.webp" class="badge"><img src="Elite Award.png" class="badge"><img src="allonme.webp" class="badge"><img src="NeonBot.png" class="badge"><img src="Party_Santa.webp" class="badge"><img src="Allonmee.webp" class="badge"><img src="RB Astro.webp" class="badge"></div>
 
-            <div class="styles__setTopBackground___342Wr-camelCase"></div>
+            <div class="styles__setTopBackground___342Wr-camelCase">______________________________________________________</div>
             <div class="setblook_container">
             </div>
         </div>
@@ -101,5 +124,7 @@
         </div>
         <script src="blooks.js"></script>
 
-    </body>
+    
+
+</div></body>
 </html>

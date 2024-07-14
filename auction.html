@@ -15,176 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* .number1 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 15vw;
-    top: 0vh;
-    position: absolute;
-    margin-top: 5vh;
-}
-.number2 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 15vw;
-    top: 7.5vh;
-    position: absolute;
-    margin-top: 5vh;
-}
-.number3 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 15vw;
-    top: 15vh;
-    position: absolute;
-    margin-top: 5vh;
-}
-.number4 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 15vw;
-    top: 22.5vh;
-    position: absolute;
-    margin-top: 5vh;
-}
-.number5 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 15vw;
-    top: 30vh;
-    position: absolute;
-    margin-top: 5vh;
-}
-.number6 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 15vw;
-    top: 37.5vh;
-    position: absolute;
-    margin-top: 5vh;
-}
-.number7 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 15vw;
-    top: 45vh;
-    position: absolute;
-    margin-top: 5vh;
-}
-.number8 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 15vw;
-    top: 52.5vh;
-    position: absolute;
-    margin-top: 5vh;
-}
-.number9 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 15vw;
-    top: 60vh;
-    position: absolute;
-    margin-top: 5vh;
-}
-.number10 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 13.5vw;
-    top: 67.5vh;
-    position: absolute;
-    margin-top: 5vh;
-}
-.lb1 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 20vw;
-    top: 12.5vh;
-    position: absolute;
-}
-.lb2 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 20vw;
-    top: 5vh;
-    position: absolute;
-}
-.lb3 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 20vw;
-    top: 20vh;
-    position: absolute;
-}
-.lb4 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 20vw;
-    top: 27.5vh;
-    position: absolute;
-}
-.lb5 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 20vw;
-    top: 35vh;
-    position: absolute;
-}
-.lb6 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 20vw;
-    top: 42.5vh;
-    position: absolute;
-}
-.lb7 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 20vw;
-    top: 50vh;
-    position: absolute;
-}
-.lb8 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 20vw;
-    top: 57.5vh;
-    position: absolute;
-}
-.lb9 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 20vw;
-    top: 65vh;
-    position: absolute;
-}
-.lb10 {
-    font-family: Nunito, sans-serif;
-    color: #fff;
-    font-size: 40px;
-    left: 20vw;
-    top: 72.5vh;
-    position: absolute;
-} */
+      
 .side_bar {
     position: fixed;
     top: 0;
@@ -1581,15 +1412,75 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+         body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #a8e063, #56ab2f);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            margin: 20px 0;
+            animation: fadeIn 2s;
+        }
+        .badge {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #56ab2f;
+            margin: 10px 0;
+            width: 200px;
+        }
+        button {
+            background-color: #56ab2f;
+            border: none;
+            padding: 10px 20px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        button:hover {
+            background-color: #a8e063;
+            transform: scale(1.05);
+        }
+        .container {
+            background-color: #1b5e20;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body>
-    <h2>Auction</h2>
-    <div style=" background-color: green; width: 425px; border-radius: 15px; margin-left: 450px; height: 100px;"  id="unlocked-images"></div>
+   <h1>Skin Auction</h1>
 
-    <div id="auction-listings">
-        
-    </div>
+    <h2>Your Unlocked Skins</h2>
+    <div class="container" id="unlocked-images"></div>
+
+    <h2>Auction Listings</h2>
+    <div class="container" id="auction-listings"></div>
+
+    <h2>Token Balance: <span id="token-balance"></span></h2>
+
 
     <h2>Tokens: <span id="token-balance"></span></h2>
   <body style="background-color: #336c4c; overflow: hidden;">

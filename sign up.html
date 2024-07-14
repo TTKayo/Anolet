@@ -318,7 +318,7 @@ function createAccount() {
             firestore.collection("users").doc(username).set({
                 badges: [],
                 tokens: 4500,
-                roles: [],
+                roles: ["Common"],
                 accepted: true,
                 profilePicture: profilePicture,
                 unlockedSkins: [],

@@ -138,6 +138,22 @@ const chatMessages = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
 
+  function getCookie(cookieName) {
+  const name = `${cookieName}=`;
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const cookieArray = decodedCookie.split(';');
+  for(let i = 0; i < cookieArray.length; i++) {
+    let cookie = cookieArray[i];
+    while (cookie.charAt(0) === ' ') {
+      cookie = cookie.substring(1);
+    }
+    if (cookie.indexOf(name) === 0) {
+      return cookie.substring(name.length, cookie.length);
+    }
+  }
+  return '';
+}
+
 function scrollToBottom() {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
@@ -154,12 +170,10 @@ async function sendMessage() {
     const roles = getCookie('roles');
 
     if (username && roles) {
-      // Retrieve the profile picture URL and badges from Firestore
       const userDoc = await getDoc(doc(firestore, 'users', username));
       const profilePicture = userDoc.exists() ? userDoc.data().profilePicture : '';
       const badgesHtml = await getUserBadges(username);
 
-      // Check for special commands or actions like /ban, /tokens, /user, etc.
       if (message.startsWith('/ban')) {
         if (['Helper', 'Admin', 'Mod', 'Owner'].includes(roles)) {
           const targetUser = message.split(' ')[1];
@@ -225,7 +239,6 @@ async function getUserBadges(username) {
   }
 }
 
-// Event listeners for send button and enter key press
 sendButton.addEventListener('click', sendMessage);
 messageInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
@@ -251,15 +264,18 @@ function displayMessage(messageData) {
   messageDiv.appendChild(profileImg);
   messageDiv.appendChild(messageText);
 
-  if (messageData.message.includes(`@${getCookie('username')}`)) {
-    messageDiv.style.backgroundColor = 'green'; 
+  // Highlight message if it mentions @username
+  const currentUsername = getCookie('username');
+  if (messageData.message.includes(`@${currentUsername}`)) {
+    messageDiv.style.backgroundColor = '#ffffcc';
+    playNotificationSound(); 
   }
 
   chatMessages.appendChild(messageDiv);
-  scrollToBottom(); // Scroll to bottom when new message is displayed
+  scrollToBottom();
 }
 
-// Event listener for new messages added to Firebase database
+
 onChildAdded(messagesRef, (snapshot) => {
   const messageData = snapshot.val();
   displayMessage(messageData);

@@ -129,7 +129,6 @@ const firebaseConfig = {
   measurementId: "G-R7K0LTHCK3"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const firestore = getFirestore(app);
@@ -139,18 +138,15 @@ const chatMessages = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
 
-// Auto-scroll function
 function scrollToBottom() {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Play sound on mention function
 function playNotificationSound() {
-  const audio = new Audio('notification-sound.mp3'); // Adjust path to your notification sound file
+  const audio = new Audio('notification-sound.mp3');
   audio.play();
 }
 
-// Function to handle message sending
 async function sendMessage() {
   const message = messageInput.value.trim();
   if (message !== '') {
@@ -189,7 +185,7 @@ async function sendMessage() {
         deleteAllMessages();
         displaySystemMessage(`All messages have been deleted by ${username} (${roles}).`);
       } else {
-        // Regular message sending
+          
         push(messagesRef, {
           username: username,
           roles: roles,
@@ -199,9 +195,8 @@ async function sendMessage() {
           timestamp: new Date().toISOString()
         });
 
-        // Check for mentions (@username)
         if (message.includes(`@${username}`)) {
-          playNotificationSound(); // Play notification sound
+          playNotificationSound(); 
         }
       }
       messageInput.value = '';
@@ -211,7 +206,6 @@ async function sendMessage() {
   }
 }
 
-// Function to display system messages
 function displaySystemMessage(message) {
   const systemMessageDiv = document.createElement('div');
   systemMessageDiv.textContent = message;
@@ -220,7 +214,6 @@ function displaySystemMessage(message) {
   scrollToBottom(); // Scroll to bottom when system message is displayed
 }
 
-// Function to get user badges from Firestore
 async function getUserBadges(username) {
   const userDoc = await getDoc(doc(firestore, 'users', username));
   if (userDoc.exists()) {
@@ -240,7 +233,6 @@ messageInput.addEventListener('keypress', (e) => {
   }
 });
 
-// Function to display messages in the chat
 function displayMessage(messageData) {
   const messageDiv = document.createElement('div');
   messageDiv.style.display = 'flex';
@@ -259,9 +251,8 @@ function displayMessage(messageData) {
   messageDiv.appendChild(profileImg);
   messageDiv.appendChild(messageText);
 
-  // Highlight message if it mentions @username
   if (messageData.message.includes(`@${getCookie('username')}`)) {
-    messageDiv.style.backgroundColor = '#ffffcc'; // Example background color for highlight
+    messageDiv.style.backgroundColor = 'green'; 
   }
 
   chatMessages.appendChild(messageDiv);

@@ -159,7 +159,7 @@ function scrollToBottom() {
 }
 
 function playNotificationSound() {
-  const audio = new Audio('notification-sound.mp3');
+  const audio = new Audio('Pinging.mp3');
   audio.play();
 }
 
@@ -225,7 +225,7 @@ function displaySystemMessage(message) {
   systemMessageDiv.textContent = message;
   systemMessageDiv.style.color = 'red';
   chatMessages.appendChild(systemMessageDiv);
-  scrollToBottom(); // Scroll to bottom when system message is displayed
+  scrollToBottom(); 
 }
 
 async function getUserBadges(username) {
@@ -264,10 +264,9 @@ function displayMessage(messageData) {
   messageDiv.appendChild(profileImg);
   messageDiv.appendChild(messageText);
 
-  // Highlight message if it mentions @username
   const currentUsername = getCookie('username');
   if (messageData.message.includes(`@${currentUsername}`)) {
-    messageDiv.style.backgroundColor = '#ffffcc';
+    messageDiv.style.backgroundColor = 'Green';
     playNotificationSound(); 
   }
 

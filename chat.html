@@ -114,7 +114,7 @@
             <button id="send-button">Send</button>
         </div>
         <script type="module">
-          import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
@@ -129,6 +129,7 @@ const firebaseConfig = {
   measurementId: "G-R7K0LTHCK3"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const firestore = getFirestore(app);
@@ -138,153 +139,141 @@ const chatMessages = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
 
-function deleteAllMessages() {
-    remove(messagesRef).then(() => {
-        console.log("All messages deleted.");
-        chatMessages.innerHTML = '';
-    }).catch((error) => {
-        console.error("Error deleting messages:", error);
-    });
+// Auto-scroll function
+function scrollToBottom() {
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-async function getUserBadges(username) {
-    const userDoc = await getDoc(doc(firestore, 'users', username));
-    if (userDoc.exists()) {
-        const badges = userDoc.data().badges || [];
-        return badges.map(badgeUrl => <img src="${badgeUrl}" alt="Badge" class="badge">).join('');
-    } else {
-        console.log("No such document!");
-        return '';
-    }
+// Play sound on mention function
+function playNotificationSound() {
+  const audio = new Audio('notification-sound.mp3'); // Adjust path to your notification sound file
+  audio.play();
 }
 
+// Function to handle message sending
 async function sendMessage() {
-    const message = messageInput.value.trim();
-    if (message !== '') {
-        const username = getCookie('username');
-        const roles = getCookie('roles');
+  const message = messageInput.value.trim();
+  if (message !== '') {
+    const username = getCookie('username');
+    const roles = getCookie('roles');
 
-        if (username && roles) {
-            // Retrieve the profile picture URL and badges from Firestore
-            const userDoc = await getDoc(doc(firestore, 'users', username));
-            const profilePicture = userDoc.exists() ? userDoc.data().profilePicture : '';
-            const badgesHtml = await getUserBadges(username);
+    if (username && roles) {
+      // Retrieve the profile picture URL and badges from Firestore
+      const userDoc = await getDoc(doc(firestore, 'users', username));
+      const profilePicture = userDoc.exists() ? userDoc.data().profilePicture : '';
+      const badgesHtml = await getUserBadges(username);
 
-            if (message.startsWith('/ban')) {
-                if (['Helper', 'Admin', 'Mod', 'Owner'].includes(roles)) {
-                    const targetUser = message.split(' ')[1];
-                    displaySystemMessage(${username} (${roles}) has banned ${targetUser});
-                } else {
-                    displaySystemMessage("You do not have permission to use this command.");
-                }
-            } else if (message.startsWith('/tokens')) {
-                const targetUser = message.split(' ')[1];
-                if (targetUser) {
-                    displaySystemMessage(Requested tokens for ${targetUser});
-                } else {
-                    displaySystemMessage("Please specify a user.");
-                }
-            } else if (message.startsWith('/user')) {
-                const targetUser = message.split(' ')[1];
-                if (targetUser) {
-                    displaySystemMessage(Requested info for ${targetUser});
-                } else {
-                    displaySystemMessage("Please specify a user.");
-                }
-            } else if (message.startsWith('/Dchat') && roles === 'Owner') {
-                deleteAllMessages();
-                displaySystemMessage(All messages have been deleted by ${username} (${roles}).);
-            } else {
-                push(messagesRef, {
-                    username: username,
-                    roles: roles,
-                    message: message,
-                    profilePicture: profilePicture,
-                    badges: badgesHtml,
-                    timestamp: new Date().toISOString()
-                });
-            }
-            messageInput.value = '';
+      // Check for special commands or actions like /ban, /tokens, /user, etc.
+      if (message.startsWith('/ban')) {
+        if (['Helper', 'Admin', 'Mod', 'Owner'].includes(roles)) {
+          const targetUser = message.split(' ')[1];
+          displaySystemMessage(`${username} (${roles}) has banned ${targetUser}`);
         } else {
-            console.error("Username or roles not found in cookies.");
+          displaySystemMessage("You do not have permission to use this command.");
         }
+      } else if (message.startsWith('/tokens')) {
+        const targetUser = message.split(' ')[1];
+        if (targetUser) {
+          displaySystemMessage(`Requested tokens for ${targetUser}`);
+        } else {
+          displaySystemMessage("Please specify a user.");
+        }
+      } else if (message.startsWith('/user')) {
+        const targetUser = message.split(' ')[1];
+        if (targetUser) {
+          displaySystemMessage(`Requested info for ${targetUser}`);
+        } else {
+          displaySystemMessage("Please specify a user.");
+        }
+      } else if (message.startsWith('/Dchat') && roles === 'Owner') {
+        deleteAllMessages();
+        displaySystemMessage(`All messages have been deleted by ${username} (${roles}).`);
+      } else {
+        // Regular message sending
+        push(messagesRef, {
+          username: username,
+          roles: roles,
+          message: message,
+          profilePicture: profilePicture,
+          badges: badgesHtml,
+          timestamp: new Date().toISOString()
+        });
+
+        // Check for mentions (@username)
+        if (message.includes(`@${username}`)) {
+          playNotificationSound(); // Play notification sound
+        }
+      }
+      messageInput.value = '';
+    } else {
+      console.error("Username or roles not found in cookies.");
     }
+  }
 }
 
+// Function to display system messages
 function displaySystemMessage(message) {
-    const systemMessageDiv = document.createElement('div');
-    systemMessageDiv.textContent = message;
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    systemMessageDiv.style.color = 'red';
-    chatMessages.appendChild(systemMessageDiv);
+  const systemMessageDiv = document.createElement('div');
+  systemMessageDiv.textContent = message;
+  systemMessageDiv.style.color = 'red';
+  chatMessages.appendChild(systemMessageDiv);
+  scrollToBottom(); // Scroll to bottom when system message is displayed
 }
 
-function getCookie(name) {
-    const value = ; ${document.cookie};
-    const parts = value.split(; ${name}=);
-    if (parts.length === 2) return parts.pop().split(';').shift();
+// Function to get user badges from Firestore
+async function getUserBadges(username) {
+  const userDoc = await getDoc(doc(firestore, 'users', username));
+  if (userDoc.exists()) {
+    const badges = userDoc.data().badges || [];
+    return badges.map(badgeUrl => `<img src="${badgeUrl}" alt="Badge" class="badge">`).join('');
+  } else {
+    console.log("No such document!");
+    return '';
+  }
 }
 
+// Event listeners for send button and enter key press
 sendButton.addEventListener('click', sendMessage);
 messageInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
 });
 
+// Function to display messages in the chat
 function displayMessage(messageData) {
-    const messageDiv = document.createElement('div');
-    messageDiv.style.display = 'flex';
-    messageDiv.style.alignItems = 'center';
+  const messageDiv = document.createElement('div');
+  messageDiv.style.display = 'flex';
+  messageDiv.style.alignItems = 'center';
 
-    const profileImg = document.createElement('img');
-    profileImg.src = messageData.profilePicture || 'default_profile_picture_url';
-    profileImg.alt = ${messageData.username}'s profile picture;
-    profileImg.style.width = '65px';
-    profileImg.style.height = '70px';
-    profileImg.style.marginRight = '10px';
+  const profileImg = document.createElement('img');
+  profileImg.src = messageData.profilePicture || 'default_profile_picture_url';
+  profileImg.alt = `${messageData.username}'s profile picture`;
+  profileImg.style.width = '65px';
+  profileImg.style.height = '70px';
+  profileImg.style.marginRight = '10px';
 
-    const messageText = document.createElement('div');
-    messageText.innerHTML = ${messageData.username} (${messageData.roles}): ${messageData.message} ${messageData.badges};
+  const messageText = document.createElement('div');
+  messageText.innerHTML = `${messageData.username} (${messageData.roles}): ${messageData.message} ${messageData.badges}`;
 
-    messageDiv.appendChild(profileImg);
-    messageDiv.appendChild(messageText);
+  messageDiv.appendChild(profileImg);
+  messageDiv.appendChild(messageText);
 
-    chatMessages.appendChild(messageDiv);
+  // Highlight message if it mentions @username
+  if (messageData.message.includes(`@${getCookie('username')}`)) {
+    messageDiv.style.backgroundColor = '#ffffcc'; // Example background color for highlight
+  }
+
+  chatMessages.appendChild(messageDiv);
+  scrollToBottom(); // Scroll to bottom when new message is displayed
 }
-        function scrollToBottom() {
-                var chatMessages = document.getElementById('chat-messages');
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
 
-            // Add message to chat
-            function addMessageToChat(message) {
-                var chatMessages = document.getElementById('chat-messages');
-                var messageElement = document.createElement('div');
-                messageElement.textContent = message;
-                chatMessages.appendChild(messageElement);
-                scrollToBottom();
-            }
-
-            // Listen for new messages
-            database.ref('messages').on('child_added', function(snapshot) {
-                var message = snapshot.val().text;
-                addMessageToChat(message);
-            });
-
-            // Send message
-            document.getElementById('send-button').addEventListener('click', function() {
-                var messageInput = document.getElementById('message-input');
-                var message = messageInput.value;
-                if (message.trim() !== '') {
-                    database.ref('messages').push({ text: message });
-                    messageInput.value = '';
-                }
-            });
+// Event listener for new messages added to Firebase database
 onChildAdded(messagesRef, (snapshot) => {
-    const messageData = snapshot.val();
-    displayMessage(messageData);
+  const messageData = snapshot.val();
+  displayMessage(messageData);
 });
+
 </script>
 
 

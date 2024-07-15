@@ -378,6 +378,8 @@
             <a href="Plus.html"><div style="margin-top: -50px; margin-left: 600px;" class="ban_container">Store</div></a>
             <a href="AddInfo.html"><div style=" margin-top: -50px; margin-left: 700px;" class="ban_container">claim tokens</div></a>
    <a href="auction.html"><div style=" margin-top: -50px; margin-left: 800px;" class="ban_container">Auction</div></a>
+       <div id="banPanel" style="display: none; margin-top: -50px; margin-left: 900px;" class="ban_container">Panel</div>
+
 
        
         <script>
@@ -389,7 +391,40 @@ usernameElement.style.textAlign = "center";
 usernameElement.style.marginLeft = "auto";
 usernameElement.style.marginRight = "auto";
 
+  function getCookie(name) {
+            let cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                let [key, value] = cookie.split('=');
+                key = key.trim();
+                if (key === name) {
+                    return decodeURIComponent(value);
+                }
+            }
+            return null;
+        }
 
+        // Function to check if user roles include any of the specified roles
+        function hasRequiredRole(roles, requiredRoles) {
+            for (let role of roles) {
+                if (requiredRoles.includes(role.trim())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Get roles from cookies (assuming roles are stored as a comma-separated string in a cookie named 'roles')
+        let rolesCookie = getCookie('roles');
+        if (rolesCookie) {
+            let userRoles = rolesCookie.split(',');
+            let requiredRoles = ['Helper', 'Mod', 'Admin', 'Owner'];
+
+            // Check if user has one of the required roles
+            if (hasRequiredRole(userRoles, requiredRoles)) {
+                // Show the panel div
+                document.getElementById('banPanel').style.display = 'block';
+            }
+        }
       </script>
         
     

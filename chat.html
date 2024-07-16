@@ -113,12 +113,12 @@
                  <button style=" display: none;" id="send-button">Send</button>
             <input style="height: 70px; width: 1800px; margin-top: -0px; font-weight: 1000; color: white; margin-left: 210px; background-color: rgb(30, 58, 30); border: none;" type="text" id="message-input" placeholder="Type your message...">        </div>
         <script type="module">
-         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
- apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+  apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
   authDomain: "cosmik-7c124.firebaseapp.com",
   databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
   projectId: "cosmik-7c124",
@@ -137,7 +137,7 @@ const chatMessages = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
 
-  function getCookie(cookieName) {
+function getCookie(cookieName) {
   const name = `${cookieName}=`;
   const decodedCookie = decodeURIComponent(document.cookie);
   const cookieArray = decodedCookie.split(';');
@@ -238,6 +238,16 @@ async function getUserBadges(username) {
   }
 }
 
+function generateRainbowText(text) {
+  const colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
+  let rainbowText = '';
+  for (let i = 0; i < text.length; i++) {
+    const color = colors[i % colors.length];
+    rainbowText += `<span style="color: ${color};">${text[i]}</span>`;
+  }
+  return rainbowText;
+}
+
 sendButton.addEventListener('click', sendMessage);
 messageInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
@@ -252,32 +262,38 @@ function displayMessage(messageData) {
 
   const profileImg = document.createElement('img');
   profileImg.src = messageData.profilePicture || 'default_profile_picture_url';
-  profileImg.alt = `${messageData.username}'s profile picture`;
+  profileImg.alt = `${messageData.username}'s profile picture';
   profileImg.style.width = '65px';
   profileImg.style.height = '70px';
   profileImg.style.marginRight = '10px';
 
   const messageText = document.createElement('div');
-  messageText.innerHTML = `${messageData.username} (${messageData.roles}): ${messageData.message} ${messageData.badges}`;
+  const rainbowUsername = generateRainbowText(messageData.username);
+  messageText.innerHTML = `${rainbowUsername} (${messageData.roles}): ${messageData.message} ${messageData.badges}`;
 
   messageDiv.appendChild(profileImg);
   messageDiv.appendChild(messageText);
 
-  const currentUsername = getCookie('username');
-  if (messageData.message.includes(`@${currentUsername}`)) {
-    messageDiv.style.backgroundColor = 'Green';
-    playNotificationSound(); 
-  }
-
   chatMessages.appendChild(messageDiv);
-  scrollToBottom();
+  scrollToBottom(); 
 }
 
+function deleteAllMessages() {
+  remove(messagesRef)
+    .then(() => {
+      console.log('All messages deleted.');
+      chatMessages.innerHTML = '';
+    })
+    .catch((error) => {
+      console.error('Error deleting messages:', error);
+    });
+}
 
 onChildAdded(messagesRef, (snapshot) => {
   const messageData = snapshot.val();
   displayMessage(messageData);
 });
+
 
 </script>
 

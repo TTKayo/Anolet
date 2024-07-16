@@ -198,7 +198,6 @@ async function sendMessage() {
         deleteAllMessages();
         displaySystemMessage(`All messages have been deleted by ${username} (${roles}).`);
       } else {
-          
         push(messagesRef, {
           username: username,
           roles: roles,
@@ -209,7 +208,7 @@ async function sendMessage() {
         });
 
         if (message.includes(`@${username}`)) {
-          playNotificationSound(); 
+          playNotificationSound();
         }
       }
       messageInput.value = '';
@@ -224,7 +223,7 @@ function displaySystemMessage(message) {
   systemMessageDiv.textContent = message;
   systemMessageDiv.style.color = 'red';
   chatMessages.appendChild(systemMessageDiv);
-  scrollToBottom(); 
+  scrollToBottom();
 }
 
 async function getUserBadges(username) {
@@ -262,7 +261,7 @@ function displayMessage(messageData) {
 
   const profileImg = document.createElement('img');
   profileImg.src = messageData.profilePicture || 'default_profile_picture_url';
-  profileImg.alt = `${messageData.username}'s profile picture';
+  profileImg.alt = `${messageData.username}'s profile picture`;
   profileImg.style.width = '65px';
   profileImg.style.height = '70px';
   profileImg.style.marginRight = '10px';
@@ -275,7 +274,7 @@ function displayMessage(messageData) {
   messageDiv.appendChild(messageText);
 
   chatMessages.appendChild(messageDiv);
-  scrollToBottom(); 
+  scrollToBottom();
 }
 
 function deleteAllMessages() {
@@ -293,6 +292,7 @@ onChildAdded(messagesRef, (snapshot) => {
   const messageData = snapshot.val();
   displayMessage(messageData);
 });
+
 
 
 </script>

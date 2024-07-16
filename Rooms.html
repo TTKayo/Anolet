@@ -10,103 +10,133 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-        }
-        #sidebar {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #111;
-            padding-top: 20px;
-        }
-        #sidebar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 25px;
-            color: white;
-            display: block;
-        }
-        #sidebar a:hover {
-            background-color: #575757;
-        }
-        .content {
-            margin-left: 260px;
+            background: linear-gradient(120deg, #a8e063, #56ab2f);
+            color: #fff;
+            text-align: center;
             padding: 20px;
         }
-        .hidden {
-            display: none;
-        }
-        .trade-container {
-            display: flex;
-            justify-content: space-between;
-        }
-        .trade-box {
-            border: 1px solid #ddd;
-            padding: 10px;
-            width: 45%;
+        h1, h2, h3 {
+            margin: 20px 0;
+            animation: fadeIn 2s;
         }
         .badge {
             width: 50px;
             height: 50px;
             margin: 5px;
             cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #profile-picture {
+            display: none;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            margin-top: 20px;
+            transition: transform 0.3s ease;
         }
         #profile-picture.show {
             display: block;
+            animation: fadeIn 2s;
+        }
+        .trade-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            animation: slideIn 1s ease;
+        }
+        .trade-box {
+            border: 2px solid #fff;
+            border-radius: 10px;
+            padding: 10px;
+            width: 45%;
+            min-height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            background-color: #56ab2f;
+            border: none;
+            padding: 10px 20px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        button:hover {
+            background-color: #a8e063;
+            transform: scale(1.05);
+        }
+        input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #56ab2f;
+            margin: 10px 0;
+            width: 200px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <div id="sidebar">
-        <a href="#">Home</a>
-        <a href="#">Profile</a>
-        <a href="#">Trades</a>
-        <a href="#">Settings</a>
-    </div>
+    <h1>Welcome, <span id="username"></span>!</h1>
+    <h2>Your Unlocked Skins</h2>
+    <div id="unlocked-images"></div>
 
-    <div class="content">
-        <h1>Welcome, <span id="username"></span>!</h1>
-        <h2>Your Unlocked Skins</h2>
-        <div id="unlocked-images"></div>
+    <h2>Create a Trading Room</h2>
+    <button id="create-room">Create Room</button>
+    <p>Your Room Code: <span id="room-code"></span></p>
 
-        <h2>Initiate a Trade</h2>
-        <input type="text" id="trade-username" placeholder="Enter Username to Trade With">
-        <button id="send-trade-request">Send Trade Request</button>
+    <h2>Join a Trading Room</h2>
+    <input type="text" id="join-room-code" placeholder="Enter Room Code">
+    <button id="join-room">Join Room</button>
 
-        <h2>Token Balance: <span id="token-balance"></span></h2>
-        <div id="trading-room" class="hidden">
-            <h2>Trading Room</h2>
-            <div class="trade-container">
-                <div class="trade-box" id="user-trade-box">
-                    <h3>Your Offer</h3>
-                    <div id="user-offer"></div>
-                    <input type="number" id="user-token-offer" placeholder="Enter tokens to trade">
-                </div>
-                <div class="trade-box" id="partner-trade-box">
-                    <h3>Partner's Offer</h3>
-                    <div id="partner-offer"></div>
-                    <input type="number" id="partner-token-offer" placeholder="Enter tokens to trade">
-                </div>
+    <h2>Token Balance: <span id="token-balance"></span></h2>
+    <div id="trading-room" class="hidden">
+        <h2>Trading Room: <span id="current-room-code"></span></h2>
+        <div class="trade-container">
+            <div class="trade-box" id="user-trade-box">
+                <h3>Your Offer</h3>
+                <div id="user-offer"></div>
+                <input type="number" id="user-token-offer" placeholder="Enter tokens to trade">
             </div>
-            <button id="accept-trade">Accept Trade</button>
-            <button id="decline-trade">Decline Trade</button>
+            <div class="trade-box" id="partner-trade-box">
+                <h3>Partner's Offer</h3>
+                <div id="partner-offer"></div>
+                <input type="number" id="partner-token-offer" placeholder="Enter tokens to trade">
+            </div>
         </div>
-
-        <h2>Profile Picture</h2>
-        <img id="profile-picture" src="" alt="Profile Picture">
+        <button id="accept-trade">Accept Trade</button>
+        <button id="decline-trade">Decline Trade</button>
     </div>
+
+    <h2>Profile Picture</h2>
+    <img id="profile-picture" src="" alt="Profile Picture">
 
     <script>
         const firebaseConfig = {
-            apiKey: "your-api-key",
-            authDomain: "your-auth-domain",
-            databaseURL: "your-database-url",
-            projectId: "your-project-id",
-            storageBucket: "your-storage-bucket",
-            messagingSenderId: "your-messaging-sender-id",
-            appId: "your-app-id",
-            measurementId: "your-measurement-id"
+            apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+            authDomain: "cosmik-7c124.firebaseapp.com",
+            databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
+            projectId: "cosmik-7c124",
+            storageBucket: "cosmik-7c124.appspot.com",
+            messagingSenderId: "412506429662",
+            appId: "1:412506429662:web:9ca3e17199297df7384a4f",
+            measurementId: "G-R7K0LTHCK3"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -131,8 +161,6 @@
                 .catch((error) => {
                     console.error("Error getting document:", error);
                 });
-
-            listenToTradeRequests(username);
         };
 
         function displayUnlockedImages(skins) {
@@ -170,116 +198,204 @@
             document.getElementById('token-balance').innerText = tokens;
         }
 
-        function listenToTradeRequests(username) {
-            firestore.collection("trades")
-                .where("to", "==", username)
-                .where("status", "==", "pending")
-                .onSnapshot((snapshot) => {
-                    snapshot.docChanges().forEach((change) => {
-                        if (change.type === "added") {
-                            const tradeData = change.doc.data();
-                            Swal.fire({
-                                title: 'Trade Request',
-                                text: `${tradeData.from} wants to trade with you.`,
-                                showDenyButton: true,
-                                confirmButtonText: 'Accept',
-                                denyButtonText: 'Decline',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    acceptTradeRequest(change.doc.id, tradeData);
-                                } else if (result.isDenied) {
-                                    declineTradeRequest(change.doc.id);
-                                }
-                            });
-                        }
+        function listenToRoomUpdates(roomCode) {
+            firestore.collection("tradingRooms").doc(roomCode).onSnapshot((doc) => {
+                const data = doc.data();
+                const username = getCookie("username");
+                const partner = data.participants.find(participant => participant !== username);
+
+                if (partner) {
+                    document.getElementById('partner-offer').innerHTML = '';
+                    data.offers[partner].forEach(imageSrc => {
+                        document.getElementById('partner-offer').innerHTML += <img src="${imageSrc}" class="badge">;
                     });
+                    document.getElementById('partner-token-offer').value = data.tokenOffers[partner] || 0;
+                }
+
+                if (data.tradeStatus[username] === 'accepted' && data.tradeStatus[partner] === 'accepted') {
+                    completeTrade(roomCode, username, partner, data.offers[username], data.offers[partner], data.tokenOffers[username], data.tokenOffers[partner]);
+                }
+            });
+        }
+
+        function completeTrade(roomCode, user1, user2, user1Offers = [], user2Offers = [], user1Tokens = 0, user2Tokens = 0) {
+            const user1Ref = firestore.collection("users").doc(user1);
+            const user2Ref = firestore.collection("users").doc(user2);
+
+            firestore.runTransaction(async (transaction) => {
+                const user1Doc = await transaction.get(user1Ref);
+                const user2Doc = await transaction.get(user2Ref);
+
+                if (!user1Doc.exists || !user2Doc.exists) {
+                    throw new Error("User document does not exist.");
+                }
+
+                const user1Data = user1Doc.data();
+                const user2Data = user2Doc.data();
+
+                const user1Skins = user1Data.unlockedSkins || [];
+                const user2Skins = user2Data.unlockedSkins || [];
+                const user1TokensBalance = user1Data.tokens || 0;
+                const user2TokensBalance = user2Data.tokens || 0;
+
+                const newUser1Skins = [...user1Skins];
+                const newUser2Skins = [...user2Skins];
+
+                function removeSkin(skins, skin) {
+                    const index = skins.indexOf(skin);
+                    if (index > -1) {
+                        skins.splice(index, 1);
+                    }
+                }
+
+                user1Offers.forEach(skin => removeSkin(newUser1Skins, skin));
+                user2Offers.forEach(skin => removeSkin(newUser2Skins, skin));
+                user1Offers.forEach(skin => newUser2Skins.push(skin));
+                user2Offers.forEach(skin => newUser1Skins.push(skin));
+
+                const newUser1TokensBalance = user1TokensBalance - user1Tokens + user2Tokens;
+                const newUser2TokensBalance = user2TokensBalance - user2Tokens + user1Tokens;
+
+                if (newUser1TokensBalance < 0 || newUser2TokensBalance < 0) {
+                    throw new Error("Insufficient tokens to complete the trade.");
+                }
+
+                transaction.update(user1Ref, { unlockedSkins: newUser1Skins, tokens: newUser1TokensBalance });
+                transaction.update(user2Ref, { unlockedSkins: newUser2Skins, tokens: newUser2TokensBalance });
+                transaction.update(firestore.collection("tradingRooms").doc(roomCode), {
+                    tradeStatus: { [user1]: 'completed', [user2]: 'completed' }
                 });
-        }
-
-        function acceptTradeRequest(tradeId, tradeData) {
-            firestore.collection("trades").doc(tradeId).update({
-                status: "accepted"
             }).then(() => {
-                document.getElementById('trading-room').classList.remove('hidden');
-                setupTradeOffers(tradeData);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Trade Completed',
+                    text: 'The trade has been successfully completed.'
+                });
             }).catch((error) => {
-                console.error("Error accepting trade:", error);
+                console.error("Error completing trade: ", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Trade Failed',
+                    text: 'There was a problem completing the trade.'
+                });
             });
         }
 
-        function declineTradeRequest(tradeId) {
-            firestore.collection("trades").doc(tradeId).update({
-                status: "declined"
+        document.getElementById('create-room').addEventListener('click', function() {
+            const username = getCookie("username");
+            const roomCode = Math.random().toString(36).substring(2, 8);
+            firestore.collection("tradingRooms").doc(roomCode).set({
+                participants: [username],
+                offers: { [username]: [] },
+                tokenOffers: { [username]: 0 },
+                tradeStatus: { [username]: 'pending' }
+            }).then(() => {
+                document.getElementById('room-code').innerText = roomCode;
+                joinRoom(roomCode);
             }).catch((error) => {
-                console.error("Error declining trade:", error);
+                console.error("Error creating room: ", error);
+            });
+        });
+
+        document.getElementById('join-room').addEventListener('click', function() {
+            const roomCode = document.getElementById('join-room-code').value;
+            joinRoom(roomCode);
+        });
+
+        function joinRoom(roomCode) {
+            const username = getCookie("username");
+            const roomRef = firestore.collection("tradingRooms").doc(roomCode);
+
+            roomRef.get().then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (!data.participants.includes(username)) {
+                        roomRef.update({
+                            participants: firebase.firestore.FieldValue.arrayUnion(username),
+                            [offers.${username}]: [],
+                            [tokenOffers.${username}]: 0,
+                            [tradeStatus.${username}]: 'pending'
+                        }).then(() => {
+                            document.getElementById('current-room-code').innerText = roomCode;
+                            document.getElementById('trading-room').classList.remove('hidden');
+                            listenToRoomUpdates(roomCode);
+                        }).catch((error) => {
+                            console.error("Error joining room: ", error);
+                        });
+                    } else {
+                        document.getElementById('current-room-code').innerText = roomCode;
+                        document.getElementById('trading-room').classList.remove('hidden');
+                        listenToRoomUpdates(roomCode);
+                    }
+                } else {
+                    console.error("No such trading room!");
+                }
+            }).catch((error) => {
+                console.error("Error getting room document:", error);
             });
         }
 
-        function setupTradeOffers(tradeData) {
-            const userOfferContainer = document.getElementById('user-offer');
-            const partnerOfferContainer = document.getElementById('partner-offer');
-            const userTokenOffer = document.getElementById('user-token-offer');
-            const partnerTokenOffer = document.getElementById('partner-token-offer');
+        document.getElementById('accept-trade').addEventListener('click', function() {
+            const roomCode = document.getElementById('current-room-code').innerText;
+            const username = getCookie("username");
+            const userTokens = parseInt(document.getElementById('user-token-offer').value, 10) || 0;
+            const tokenBalance = parseInt(document.getElementById('token-balance').innerText, 10);
 
-            userOfferContainer.innerHTML = '';
-            partnerOfferContainer.innerHTML = '';
-
-            tradeData.userOffer.forEach(item => {
-                const img = document.createElement('img');
-                img.src = item;
-                img.className = 'badge';
-                userOfferContainer.appendChild(img);
-            });
-
-            tradeData.partnerOffer.forEach(item => {
-                const img = document.createElement('img');
-                img.src = item;
-                img.className = 'badge';
-                partnerOfferContainer.appendChild(img);
-            });
-
-            userTokenOffer.value = tradeData.userTokenOffer;
-            partnerTokenOffer.value = tradeData.partnerTokenOffer;
-        }
-
-        document.getElementById('send-trade-request').addEventListener('click', () => {
-            const tradeUsername = document.getElementById('trade-username').value;
-            if (!tradeUsername) {
-                alert("Please enter a username to trade with.");
+            if (userTokens > tokenBalance) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Insufficient Tokens',
+                    text: 'You do not have enough tokens to offer this trade.'
+                });
                 return;
             }
 
-            const username = getCookie("username");
-            const userOffer = Array.from(document.getElementById('user-offer').children).map(img => img.src);
-            const userTokenOffer = parseInt(document.getElementById('user-token-offer').value) || 0;
-
-            firestore.collection("trades").add({
-                from: username,
-                to: tradeUsername,
-                userOffer: userOffer,
-                userTokenOffer: userTokenOffer,
-                partnerOffer: [],
-                partnerTokenOffer: 0,
-                status: "pending"
+            firestore.collection("tradingRooms").doc(roomCode).update({
+                [tradeStatus.${username}]: 'accepted',
+                [tokenOffers.${username}]: userTokens
             }).then(() => {
-                alert("Trade request sent!");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Trade Accepted',
+                    text: 'You have accepted the trade. Waiting for the partner to accept.'
+                });
             }).catch((error) => {
-                console.error("Error sending trade request:", error);
+                console.error("Error accepting trade: ", error);
             });
         });
 
-        document.getElementById('accept-trade').addEventListener('click', () => {
-            // Finalize trade logic
-        });
+        document.getElementById('decline-trade').addEventListener('click', function() {
+            const roomCode = document.getElementById('current-room-code').innerText;
+            const username = getCookie("username");
 
-        document.getElementById('decline-trade').addEventListener('click', () => {
-            document.getElementById('trading-room').classList.add('hidden');
+            firestore.collection("tradingRooms").doc(roomCode).update({
+                [tradeStatus.${username}]: 'declined'
+            }).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Trade Declined',
+                    text: 'You have declined the trade.'
+                });
+            }).catch((error) => {
+                console.error("Error declining trade: ", error);
+            });
         });
 
         function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
+            let dc = document.cookie;
+            let prefix = name + "=";
+            let begin = dc.indexOf("; " + prefix);
+            if (begin == -1) {
+                begin = dc.indexOf(prefix);
+                if (begin != 0) return null;
+            } else {
+                begin += 2;
+            }
+            let end = document.cookie.indexOf(";", begin);
+            if (end == -1) {
+                end = dc.length;
+            }
+            return decodeURI(dc.substring(begin + prefix.length, end));
         }
     </script>
 </body>

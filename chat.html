@@ -180,10 +180,15 @@ function playNotificationSound() {
 async function sendMessage() {
   const message = messageInput.value.trim();
   if (message !== '') {
-    const username = getCookie('username');
-    const roles = getCookie('roles');
+    try {
+      const username = getCookie('username');
+      const roles = getCookie('roles');
 
-    if (username && roles) {
+      if (!username || !roles) {
+        console.error("Username or roles not found in cookies.");
+        return;
+      }
+
       const userDoc = await getDoc(doc(firestore, 'users', username));
       const profilePicture = userDoc.exists() ? userDoc.data().profilePicture : '';
       const badgesHtml = await getUserBadges(username);
@@ -213,7 +218,7 @@ async function sendMessage() {
         deleteAllMessages();
         displaySystemMessage(`All messages have been deleted by ${username} (${roles}).`);
       } else {
-        push(messagesRef, {
+        await push(messagesRef, {
           username: username,
           roles: roles,
           message: message,
@@ -226,12 +231,14 @@ async function sendMessage() {
           playNotificationSound();
         }
       }
+
       messageInput.value = '';
-    } else {
-      console.error("Username or roles not found in cookies.");
+    } catch (error) {
+      console.error("Error sending message:", error);
     }
   }
 }
+
 
 function displaySystemMessage(message) {
   const systemMessageDiv = document.createElement('div');

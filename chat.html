@@ -234,10 +234,15 @@ async function sendMessage() {
 
       messageInput.value = '';
     } catch (error) {
-      console.error("Error sending message:", error);
+      if (error.code === 'quota-exceeded') {
+        console.error("Quota exceeded. Please try again later.");
+      } else {
+        console.error("Error sending message:", error);
+      }
     }
   }
 }
+
 
 
 function displaySystemMessage(message) {

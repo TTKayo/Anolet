@@ -18,6 +18,22 @@
     display: block;
     unicode-bidi: isolate;
 }
+            @keyframes rainbow {
+  0% { color: #FF0000; }
+  14% { color: #FF7F00; }
+  28% { color: #FFFF00; }
+  42% { color: #00FF00; }
+  57% { color: #0000FF; }
+  71% { color: #4B0082; }
+  85% { color: #9400D3; }
+  100% { color: #FF0000; }
+}
+
+.rainbow-text {
+  display: inline-block;
+  animation: rainbow 3s linear infinite;
+}
+
             .badge {
     width: 20px; /* Set badge width to 45px */
 }
@@ -238,13 +254,7 @@ async function getUserBadges(username) {
 }
 
 function generateRainbowText(text) {
-  const colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
-  let rainbowText = '';
-  for (let i = 0; i < text.length; i++) {
-    const color = colors[i % colors.length];
-    rainbowText += `<span style="color: ${color};">${text[i]}</span>`;
-  }
-  return rainbowText;
+  return `<span class="rainbow-text">${text}</span>`;
 }
 
 sendButton.addEventListener('click', sendMessage);
@@ -267,8 +277,8 @@ function displayMessage(messageData) {
   profileImg.style.marginRight = '10px';
 
   const messageText = document.createElement('div');
-  const rainbowUsername = generateRainbowText(messageData.username);
-  messageText.innerHTML = `${rainbowUsername} (${messageData.roles}): ${messageData.message} ${messageData.badges}`;
+  const usernameHtml = messageData.roles === 'Owner' ? generateRainbowText(messageData.username) : messageData.username;
+  messageText.innerHTML = `${usernameHtml} (${messageData.roles}): ${messageData.message} ${messageData.badges}`;
 
   messageDiv.appendChild(profileImg);
   messageDiv.appendChild(messageText);
@@ -292,7 +302,6 @@ onChildAdded(messagesRef, (snapshot) => {
   const messageData = snapshot.val();
   displayMessage(messageData);
 });
-
 
 
 </script>

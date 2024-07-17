@@ -553,7 +553,7 @@ button{
 }
 .stats_banner {
         margin-left: 300px;
-        margin-top: 225px;
+        margin-top: 275px;
         width: 270px;
         height: 62px;
         padding-bottom: 6px;
@@ -684,7 +684,7 @@ button{
 
 .stats_container {
     width: 750px;
-    margin-top: -30px;
+    margin-top: -80px;
     margin-left: 300px;
     border-radius: 5px;
     box-shadow: 0 0 8px 3px rgba(0,0,0,.2);

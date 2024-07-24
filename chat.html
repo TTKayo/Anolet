@@ -71,12 +71,15 @@
                 transform: translate(-50%, -50%) rotate(15deg);
                 opacity: 0.1;
             }
+            #chat{
+    margin-left: 40px;
+    margin-top: -160px;
+}
         </style>
     </head>
     <body style="background-color: #336c4c; overflow: hidden;">
         <img alt="Blooks Background" class="bg_img">
         <div class="side_bar">
-     <div class="side_bar">
             <div class="anolet_text" id="container">
                 <a class="logo_link" style="color:#fff; text-decoration: none;" href="index.html">Anolet</a>
             </div>
@@ -109,22 +112,28 @@
                 <div class="puzzles_text">
                     <a href="chat.html" style="color:#fff; text-decoration: none;" class="link">Chat</a>
                 </div>
-                <svg fill="#FFFFFF" viewBox="0 0 24 24" class="puzzles_icon"><path d="M 11.5 0 C 10.119 0 9 1.119 9 2.5 L 9 4 L 5 4 C 3.895 4 3 4.895 3 6 L 3 9 C 3 9.552 3.448 10 4 10 L 4.3574219 10 C 5.6654219 10 6.8553281 10.941188 6.9863281 12.242188 C 7.1363281 13.739187 5.966 15 4.5 15 L 4 15 C 3.448 15 3 15.448 3 16 L 3 19 C 3 20.105 3.895 21 5 21 L 8 21 C 8.552 21 9 20.552 9 20 L 9 19.642578 C 9 18.334578 9.9411875 17.144672 11.242188 17.013672 C 12.739187 16.863672 14 18.034 14 19.5 L 14 20 C 14 20.552 14.448 21 15 21 L 18 21 C 19.105 21 20 20.105 20 19 L 20 15 L 21.5 15 C 22.881 15 24 13.881 24 12.5 C 24 11.119 22.881 10 21.5 10 L 20 10 L 20 6 C 20 4.895 19.105 4 18 4 L 14 4 L 14 2.5 C 14 1.119 12.881 0 11.5 0 z"></path></svg>
-            </div>
+                <?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                <svg id="chat" width="25px" height="800px" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17 3.33782C15.5291 2.48697 13.8214 2 12 2C6.47715 2 2 6.47715 2 12C2 13.5997 2.37562 15.1116 3.04346 16.4525C3.22094 16.8088 3.28001 17.2161 3.17712 17.6006L2.58151 19.8267C2.32295 20.793 3.20701 21.677 4.17335 21.4185L6.39939 20.8229C6.78393 20.72 7.19121 20.7791 7.54753 20.9565C8.88837 21.6244 10.4003 22 12 22C17.5228 22 22 17.5228 22 12C22 10.1786 21.513 8.47087 20.6622 7" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M8 12H8.009M11.991 12H12M15.991 12H16" stroke="#1C274C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>            </div>
             <div class="panel_selector">
                 <div class="panel_text">
 
-                                                                     <a href="Rooms.html" style="color:#fff; text-decoration: none;" class="link">Trading Rooms</a>
+             <a href="Rooms.html" style="color:#fff; text-decoration: none;" class="link">Trading Rooms</a>
 
-                <i class="fas fa-wrench panel_icon"></i>
-            </div>
+             <?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+             <svg id="Trade" width="35px" height="800px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="white"><path d="M14.63 7L13 3h1V2H9V1H8v1H3v1h1L2.38 7H2v1h.15c.156.498.473.93.9 1.23a2.47 2.47 0 0 0 2.9 0A2.44 2.44 0 0 0 6.86 8H7V7h-.45L4.88 3H8v8H6l-.39.18-2 2.51.39.81h9l.39-.81-2-2.51L11 11H9V3h3.13l-1.67 4H10v1h.15a2.48 2.48 0 0 0 4.71 0H15V7h-.37zM5.22 8.51a1.52 1.52 0 0 1-.72.19 1.45 1.45 0 0 1-.71-.19A1.47 1.47 0 0 1 3.25 8h2.5a1.52 1.52 0 0 1-.53.51zM5.47 7h-2l1-2.4 1 2.4zm5.29 5L12 13.5H5L6.24 12h4.52zm1.78-7.38l1 2.4h-2l1-2.4zm.68 3.91a1.41 1.41 0 0 1-.72.19 1.35 1.35 0 0 1-.71-.19 1.55 1.55 0 0 1-.54-.53h2.5a1.37 1.37 0 0 1-.53.53z"/></svg>            </div>
             <div>
+
+            <a href="login.html" onclick="clearCookies()"><button class="logout_button">Logout</button></a>
+            </div>
 
             <a href="login.html" onclick="clearCookies()"><button class="logout_button">Logout</button></a>
             </div>
              
         <div id="chat-container">
-            <div id="chat-messages" style="margin-top: -30px; margin-left: 215px; color: white; font-family: Nunito; font-weight: 550; border-radius: 5px; font-weight: 1000; font-size: 20px;"></div>
+            <div id="chat-messages" style="margin-top: -675px; margin-left: 215px; color: white; font-family: Nunito; font-weight: 550; border-radius: 5px; font-weight: 1000; font-size: 20px;"></div>
                  <button style=" display: none;" id="send-button">Send</button>
             <input style="height: 70px; width: 1800px; margin-top: -0px; font-weight: 1000; color: white; margin-left: 210px; background-color: rgb(30, 58, 30); border: none;" type="text" id="message-input" placeholder="Type your message...">        </div>
         <script type="module">

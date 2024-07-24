@@ -1,141 +1,139 @@
- const firebaseConfig = {
-            apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
-            authDomain: "cosmik-7c124.firebaseapp.com",
-            databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
-            projectId: "cosmik-7c124",
-            storageBucket: "cosmik-7c124.appspot.com",
-            messagingSenderId: "412506429662",
-            appId: "1:412506429662:web:9ca3e17199297df7384a4f",
-            measurementId: "G-R7K0LTHCK3"
-        };
+const firebaseConfig = {
+    apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+    authDomain: "cosmik-7c124.firebaseapp.com",
+    databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
+    projectId: "cosmik-7c124",
+    storageBucket: "cosmik-7c124.appspot.com",
+    messagingSenderId: "412506429662",
+    appId: "1:412506429662:web:9ca3e17199297df7384a4f",
+    measurementId: "G-R7K0LTHCK3"
+};
 
-        firebase.initializeApp(firebaseConfig);
-        const firestore = firebase.firestore();
+firebase.initializeApp(firebaseConfig);
+const firestore = firebase.firestore();
 
-        function getCookie(name) {
-            const cname = name + "=";
-            const decodedCookie = decodeURIComponent(document.cookie);
-            const ca = decodedCookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(cname) == 0) {
-                    return c.substring(cname.length, c.length);
-                }
-            }
-            return "";
+function toggleChest() {
+    const chestContainer = document.querySelector('.chest-container');
+    chestContainer.classList.toggle('clicked');
+    if (chestContainer.classList.contains('clicked')) {
+        buyChest();
+    }
+}
+
+function getCookie(name) {
+    const cname = name + "=";
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
         }
-
-        function setCookie(name, value, days) {
-            const d = new Date();
-            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-            const expires = "expires=" + d.toUTCString();
-            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        if (c.indexOf(cname) == 0) {
+            return c.substring(cname.length, c.length);
         }
+    }
+    return "";
+}
 
-        async function buyItem(itemName, itemCost) {
-            const username = getCookie("username");
-            let tokens = parseInt(getCookie("tokens"), 10);
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + d.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+}
 
-            if (tokens >= itemCost) {
-                tokens -= itemCost;
-                setCookie("tokens", tokens, 1);
+function buyChest() {
+    const username = getCookie("username");
+    let tokens = parseInt(getCookie("tokens"), 10);
 
-                try {
-                    await firestore.collection("users").doc(username).update({
-                        tokens: tokens,
-                        unlockedSkins: firebase.firestore.FieldValue.arrayUnion(itemName)
-                    });
+    if (tokens >= 25) {
+        tokens -= 25;
+        setCookie("tokens", tokens, 1);
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Purchase Successful',
-                        text: `You have successfully bought ${itemName}.`
-                    });
+        firestore.collection("users").doc(username).update({
+            tokens: tokens
+        }).then(() => {
+            unlockImages(username);
+        }).catch((error) => {
+            console.error("Error updating tokens: ", error);
+        });
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Not Enough Tokens',
+            text: 'You need at least 25 tokens to buy a chest.'
+        });
+    }
+}
 
-                    displayTokens(tokens);
-                } catch (error) {
-                    console.error("Error updating tokens: ", error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Purchase Failed',
-                        text: 'There was an error processing your purchase. Please try again.'
-                    });
-                }
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Not Enough Tokens',
-                    text: 'You need more tokens to buy this item.'
-                });
-            }
+async function unlockImages(username) {
+    let unlockedImages = [];
+
+    // Fetch chances from Firestore
+    const chancesSnapshot = await firestore.collection("chances").get();
+    const chances = {};
+    chancesSnapshot.forEach(doc => {
+        chances[doc.id] = doc.data().chance;
+    });
+
+    const images = [];
+    for (const [src, chance] of Object.entries(chances)) {
+        images.push({ src, chance });
+    }
+
+    images.forEach(function(image) {
+        if (Math.random() < image.chance) {
+            unlockedImages.push(image.src);
         }
+    });
 
-        function displayTokens(tokens) {
-            document.getElementById('tokens-display').textContent = `Tokens: ${tokens}`;
-        }
+    console.log('Unlocked images: ', unlockedImages);
 
-        async function loadShopItems() {
-            const shopContainer = document.getElementById('shop-container');
+    if (unlockedImages.length > 0) {
+        const imageToShow = unlockedImages[0];
 
-            const itemsSnapshot = await firestore.collection("shopItems").get();
-            itemsSnapshot.forEach(doc => {
-                const item = doc.data();
-                const itemDiv = document.createElement('div');
-                itemDiv.style.border = "1px solid black";
-                itemDiv.style.margin = "10px";
-                itemDiv.style.padding = "10px";
-                itemDiv.style.textAlign = "center";
+        firestore.collection("users").doc(username).update({
+            unlockedSkins: firebase.firestore.FieldValue.arrayUnion(imageToShow)
+        }).then(() => {
+            displayUnlockedImages([imageToShow]);
+        }).catch((error) => {
+            console.error("Error updating unlocked skins: ", error);
+        });
+    } else {
+        Swal.fire({
+            icon: 'info',
+            title: 'No Images Unlocked',
+            text: 'Better luck next time!'
+        });
+    }
+}
 
-                const itemName = document.createElement('h2');
-                itemName.textContent = item.name;
+function displayUnlockedImages(imageUrls) {
+    const imageContainer = document.getElementById('unlocked-images');
+    imageContainer.innerHTML = '';
 
-                const itemImage = document.createElement('img');
-                itemImage.src = item.image;
-                itemImage.style.width = "100px";
-                itemImage.style.height = "100px";
+    imageUrls.forEach((url) => {
+        const img = document.createElement('img');
+        img.src = url;
+        imageContainer.appendChild(img);
+    });
+}
 
-                const itemPrice = document.createElement('p');
-                itemPrice.textContent = `Price: ${item.price} tokens`;
-
-                const buyButton = document.createElement('button');
-                buyButton.textContent = 'Buy';
-                buyButton.onclick = () => buyItem(item.name, item.price);
-
-                itemDiv.appendChild(itemName);
-                itemDiv.appendChild(itemImage);
-                itemDiv.appendChild(itemPrice);
-                itemDiv.appendChild(buyButton);
-
-                shopContainer.appendChild(itemDiv);
-            });
-        }
-
-        window.onload = function() {
-            const tokens = getCookie("tokens");
-            displayTokens(tokens);
-            loadShopItems();
-        };
-// Initialize shop items in Firestore if they don't exist
-async function initializeShopItems() {
-    const items = [
-        { name: 'Lost Bot', price: 100, image: 'Lost Bot.png' },
-        // Add more items here
+// Initialize chances in Firestore if they don't exist
+async function initializeChances() {
+    const images = [
+       
+        { src: 'Lost Bot.png', chance: 0.00001 },
     ];
 
-    items.forEach(async (item) => {
-        const docRef = firestore.collection("shopItems").doc(item.name);
+    images.forEach(async (image) => {
+        const docRef = firestore.collection("chances").doc(image.src);
         const doc = await docRef.get();
         if (!doc.exists) {
-            docRef.set({
-                name: item.name,
-                price: item.price,
-                image: item.image
-            });
+            docRef.set({ chance: image.chance });
         }
     });
 }
 
-initializeShopItems();
+initializeChances();

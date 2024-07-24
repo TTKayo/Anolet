@@ -153,14 +153,21 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
-<body>
-    
-  
-
-
-
-</head>
 <body style="background-color: #336c4c; overflow: hidden;">
+    
+    <div class="chest-container" onclick="toggleChest()">
+        <div class="chest">
+            <div class="lid"></div>
+        </div>
+        <div class="images" id="unlocked-images">
+            <!-- Images will be dynamically added here -->
+        </div>
+    </div>
+
+
+
+
+
     <div class="bg_img"></div>
    <div class="side_bar">
             <div class="anolet_text" id="container">
@@ -223,5 +230,7 @@
      <script>
            
      </script>
-    </body>
+    
+
+</div></div></body>
 </html>

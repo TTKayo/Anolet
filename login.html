@@ -369,6 +369,12 @@ async function login() {
                     title: 'Banned',
                     text: 'You are banned for ' + userData.banReason
                 });
+            } else if (!userData.accepted) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Account Not Accepted',
+                    text: 'Your account is awaiting approval.'
+                });
             } else {
                 // Compare stored password with entered password
                 if (password === userData.password) {

@@ -1,186 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Owner Panel</title>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<style>
-body {
-  background-color: #0e0e23; /* Dark blue */
-  color: #ffffff; /* White */
-  font-family: 'Roboto', sans-serif; /* Google font */
-}
-
-.container {
-  margin: 0 auto;
-  padding: 20px;
-  max-width: 600px;
-  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
-  border-radius: 10px;
-  animation: fadeIn 1s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #ffcd55; /* Yellow */
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 10px;
-  color: #ffffff; /* White */
-}
-
-.form-group input, .form-group textarea {
-  width: 100%;
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
-  border: none;
-  border-radius: 5px;
-  color: #ffffff; /* White */
-  animation: slideIn 1s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.form-group textarea {
-  resize: vertical;
-}
-
-button {
-  width: 100%;
-  padding: 12px 20px;
-  margin-top: 20px;
-  background-color: #ffcd55; /* Yellow */
-  color: #0e0e23; /* Dark blue */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  animation: fadeInButton 1s ease;
-}
-
-button:hover {
-  background-color: #ffa600; /* Brighter yellow */
-  transform: scale(1.05); /* Scale up slightly on hover */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add shadow on hover */
-}
-
-@keyframes fadeInButton {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-#userDataForm {
-  display: none;
-  animation: slideInForm 1s ease;
-}
-
-@keyframes slideInForm {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-#alert {
-  display: none;
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 5px;
-  color: #0e0e23; /* Dark blue */
-  background-color: #76B041; /* Anole green */
-}
-
-</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito&family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <title>Account Management | Anolet</title>
+    <style>
+        body {
+            background-color: #336c4c;
+            font-family: "Nunito", sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+        .account-card {
+            background-color: #3cb383;
+            border-radius: 7px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 4px #00000026;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .account-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .account-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .button {
+            background-color: #6eebb9;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            font-family: "Nunito", sans-serif;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #5ac99a;
+        }
+        .header {
+            font-family: "Titan One", sans-serif;
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+    <link rel="icon" type="image/x-icon" href="favicon_img.png">
 </head>
 <body>
-<div class="container">
-  <h1>Owner Panel</h1>
-  <div id="alert"></div>
-  <div class="form-group">
-    <label for="username">Username</label>
-    <input type="text" id="username" placeholder="Enter username">
-  </div>
-  <button onclick="loadUserData()">Load User Data</button>
-  <div id="userDataForm" style="display: none;">
-    <div class="form-group">
-      <label for="ban">Ban (true/false)</label>
-      <input type="text" id="ban">
+
+    <div class="container">
+        <div class="header">Manage Accounts</div>
+        <div id="account-list"></div>
     </div>
-    <div class="form-group">
-      <label for="banReason">Ban Reason</label>
-      <input type="text" id="banReason">
-    </div>
-    <button onclick="updateUserData()">Update User Data</button>
-  </div>
-</div>
+    <a href="stats.html"><div class="header">Home</div></a>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+            authDomain: "cosmik-7c124.firebaseapp.com",
+            databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
+            projectId: "cosmik-7c124",
+            storageBucket: "cosmik-7c124.appspot.com",
+            messagingSenderId: "412506429662",
+            appId: "1:412506429662:web:9ca3e17199297df7384a4f",
+            measurementId: "G-R7K0LTHCK3"
+        };
 
-<script>
-  // Initialize Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
-    authDomain: "cosmik-7c124.firebaseapp.com",
-    databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
-    projectId: "cosmik-7c124",
-    storageBucket: "cosmik-7c124.appspot.com",
-    messagingSenderId: "412506429662",
-    appId: "1:412506429662:web:9ca3e17199297df7384a4f",
-    measurementId: "G-R7K0LTHCK3"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const firestore = firebase.firestore();
-
-  // Function to get the value of a cookie by name
-  function getCookie(name) {
-    let cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-      let [key, value] = cookie.split('=');
-      key = key.trim();
-      if (key === name) {
-        return decodeURIComponent(value);
-      }
-    }
-    return null;
-  }
-
-  // Function to check if user roles include any of the specified roles
-  function hasRequiredRole(roles, requiredRoles) {
+        firebase.initializeApp(firebaseConfig);
+        const firestore = firebase.firestore();
+ function hasRequiredRole(roles, requiredRoles) {
     for (let role of roles) {
       if (requiredRoles.includes(role.trim())) {
         return true;
@@ -206,51 +111,96 @@ button:hover {
 
   // Run the role check on page load
   checkUserRole();
+        function acceptAccount(username) {
+            firestore.collection("users").doc(username).update({
+                accepted: true
+            }).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account Accepted',
+                    text: 'The account has been accepted.'
+                });
+                document.getElementById(username).remove();
+            }).catch((error) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to accept the account. Please try again later.'
+                });
+                console.error("Error updating document: ", error);
+            });
+        }
+ function getCookie(name) {
+            const cname = name + "=";
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(cname) == 0) {
+                    return c.substring(cname.length, c.length);
+                }
+            }
+            return "";
+        }
+        function declineAccount(username) {
+            firestore.collection("users").doc(username).update({
+                accepted: false
+            }).then(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Account Declined',
+                    text: 'The account has been declined.'
+                });
+                document.getElementById(username).remove();
+            }).catch((error) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to decline the account. Please try again later.'
+                });
+                console.error("Error updating document: ", error);
+            });
+        }
 
-  function showAlert(message, isError = false) {
-    const alertDiv = document.getElementById('alert');
-    alertDiv.style.display = 'block';
-    alertDiv.textContent = message;
-    alertDiv.style.backgroundColor = isError ? '#FF6347' : '#76B041'; // Tomato red for error, Anole green for success
-  }
+        function fetchAccounts() {
+            firestore.collection("users").where("accepted", "==", false).get().then((querySnapshot) => {
+                const accountList = document.getElementById("account-list");
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const username = doc.id;
+                    const accountCard = document.createElement("div");
+                    accountCard.className = "account-card";
+                    accountCard.id = username;
+                    accountCard.innerHTML = `
+                        <div class="account-info">
+                            <div>Username: ${username}</div>
+                            <div>Tokens: ${data.tokens}</div>
+                            <div>Roles: ${data.roles.join(", ")}</div>
+                        </div>
+                        <div class="account-buttons">
+                            <button class="button" onclick="acceptAccount('${username}')">Accept</button>
+                            <button class="button" onclick="declineAccount('${username}')">Decline</button>
+                        </div>
+                    `;
+                    accountList.appendChild(accountCard);
+                });
+            }).catch((error) => {
+                console.error("Error getting documents: ", error);
+            });
+        }
 
-  function loadUserData() {
-    const username = document.getElementById("username").value;
-    if (!username) {
-      showAlert('Please enter a username.', true);
-      return;
-    }
+        window.onload = fetchAccounts;
+    </script>
+</body>
+</html>
 
-    firestore.collection("users").doc(username).get().then((doc) => {
-      if (doc.exists) {
-        const userData = doc.data();
-        document.getElementById("ban").value = userData.ban;
-        document.getElementById("banReason").value = userData.banReason;
-        document.getElementById("userDataForm").style.display = 'block';
-      } else {
-        showAlert('User not found.', true);
-      }
-    }).catch((error) => {
-      console.error("Error getting document:", error);
-      showAlert('Error getting document: ' + error.message, true);
-    });
-  }
+  // Function to check if user roles include any of the specified roles
+ 
 
-  function updateUserData() {
-    const username = document.getElementById("username").value;
-    const ban = document.getElementById("ban").value.toLowerCase() === 'true';
-    const banReason = document.getElementById("banReason").value;
-
-    firestore.collection("users").doc(username).update({
-      ban: ban,
-      banReason: banReason
-    }).then(() => {
-      showAlert('User data updated successfully.');
-    }).catch((error) => {
-      console.error("Error updating document: ", error);
-      showAlert('Error updating document: ' + error.message, true);
-    });
-  }
+ 
 </script>
 </body>
 </html>

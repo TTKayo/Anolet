@@ -298,10 +298,9 @@
             return "";
         }
 
-        function createAccount() {
+          function createAccount() {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
-            const profilePicture = "Cosmik.webp";
 
             if (/[^a-zA-Z0-9]/.test(username)) {
                 Swal.fire({
@@ -309,6 +308,12 @@
                     title: 'Invalid Username',
                     text: 'Username can only contain letters and numbers.'
                 });
+                return;
+            }
+
+            // Check if bcrypt is loaded
+            if (typeof bcrypt === 'undefined') {
+                console.error("bcrypt is not loaded.");
                 return;
             }
 
@@ -329,7 +334,7 @@
                     tokens: 4500,
                     roles: ["Common"],
                     accepted: false, // Initially set to false
-                    profilePicture: profilePicture,
+                    profilePicture: "Cosmik.webp",
                     unlockedSkins: [],
                     ban: false,
                     banReason: "",
@@ -349,6 +354,7 @@
                 });
             });
         }
+
 
         function login() {
             const username = document.getElementById("username").value;

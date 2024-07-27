@@ -221,29 +221,31 @@ async function sendMessage() {
         } else {
           displaySystemMessage("Please specify a user.");
         }
-      } else if (message.startsWith('/dchat')) {
-        if (['Admin', 'Mod', 'Owner'].includes(roles)) {
-          await remove(messagesRef);
-          displaySystemMessage("All chat messages have been deleted.");
-        } else {
-          displaySystemMessage("You do not have permission to use this command.");
-        }
+      } else if (message.startsWith('/Dchat') && roles === 'Owner') {
+        deleteAllMessages();
+        displaySystemMessage(All messages have been deleted by ${username} (${roles}).);
       } else {
-        // Handle regular messages here
-        const newMessageRef = push(messagesRef);
-        await set(newMessageRef, {
+        await push(messagesRef, {
           username: username,
+          roles: roles,
           message: message,
           profilePicture: profilePicture,
-          badgesHtml: badgesHtml
+          badges: badgesHtml,
+          timestamp: new Date().toISOString()
         });
-        playNotificationSound();
+
+        if (message.includes(@${username})) {
+          playNotificationSound();
+        }
       }
-      
+
       messageInput.value = '';
-      scrollToBottom();
     } catch (error) {
-      console.error("Error sending message:", error);
+      if (error.code === 'quota-exceeded') {
+        console.error("Quota exceeded. Please try again later.");
+      } else {
+        console.error("Error sending message:", error);
+      }
     }
   }
 }

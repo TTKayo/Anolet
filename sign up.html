@@ -364,7 +364,6 @@
                   bcrypt.compare(password, user.password, function(err, result) {
                       if (result) {
                           setCookie("username", username, 30);
-                          window.location.href = "home.html";
                       } else {
                           document.getElementById("error-message").textContent = "Invalid password.";
                       }

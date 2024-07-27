@@ -298,63 +298,54 @@
             return "";
         }
 
-       function createAccount() {
+      if (typeof bcrypt !== 'undefined') {
+            console.log('bcrypt is loaded');
+        } else {
+            console.error('bcrypt is not loaded');
+        }
+
+        async function createAccount() {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
-            if (/[^a-zA-Z0-9]/.test(username)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid Username',
-                    text: 'Username can only contain letters and numbers.'
-                });
-                return;
-            }
+            try {
+                // Hash the password using bcrypt
+                const hashedPassword = await bcrypt.hash(password, 10);
+                const userRef = db.collection("users").doc(username);
 
-            // Check if bcrypt is loaded
-            if (typeof bcrypt === 'undefined') {
-                console.error("bcrypt is not loaded.");
-                return;
-            }
-
-            // Hash the password using bcryptjs
-            bcrypt.hash(password, 10, function(err, hashedPassword) {
-                if (err) {
+                // Check if the username already exists
+                const doc = await userRef.get();
+                if (doc.exists) {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to hash password.'
+                        icon: "error",
+                        title: "Username taken",
+                        text: "Please choose a different username."
                     });
                     return;
                 }
 
-                // Save the user to Firestore
-                firestore.collection("users").doc(username).set({
-                    badges: [],
-                    tokens: 4500,
-                    roles: ["Common"],
-                    accepted: false, // Initially set to false
-                    profilePicture: "Cosmik.webp",
-                    unlockedSkins: [],
-                    ban: false,
-                    banReason: "",
-                    panelAccess: false,
-                    showAnimation: true,
-                    password: hashedPassword // Store the hashed password
-                }).then(() => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Account Created',
-                        text: 'Please wait for account approval.'
-                    }).then(() => {
-                        window.location.href = "login.html"; // Redirect to login page
-                    });
-                }).catch((error) => {
-                    console.error("Error adding document: ", error);
+                // Save the new user to Firestore
+                await userRef.set({
+                    password: hashedPassword,
+                    accepted: false // New field to indicate if the account is accepted
                 });
-            });
-        }
 
+                Swal.fire({
+                    icon: "success",
+                    title: "Account created",
+                    text: "Your account has been created successfully. Please wait for acceptance."
+                }).then(() => {
+                    window.location.href = "login.html";
+                });
+            } catch (error) {
+                console.error("Error creating account:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "There was an error creating your account. Please try again later."
+                });
+            }
+        }
 
         function login() {
             const username = document.getElementById("username").value;

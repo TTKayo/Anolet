@@ -325,8 +325,7 @@ function createAccount() {
                 ban: false,
                 banReason: "",
                 panelAccess: false,
-                showAnimation: true,
-                password: password // Store the password directly
+                showAnimation: true
             }).then(() => {
                 Swal.fire({
                     icon: 'success',
@@ -363,20 +362,27 @@ function login() {
                         title: 'Banned',
                         text: 'You are banned for ' + userData.banReason
                     });
+                } else if (!userData.accepted) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Not Accepted',
+                        text: 'Your account is not yet accepted by an admin.'
+                    });
                 } else {
-                    // Compare stored password with entered password
-                    if (password === userData.password) {
-                        setCookie("username", username, 1); // Set the cookie for 1 day
-                        setCookie("roles", userData.roles.join(','), 1); // Set the roles cookie
-                        setCookie("tokens", userData.tokens, 1); // Set the tokens cookie
-                        window.location.href = stats.html;
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Authentication Failed',
-                            text: 'Invalid username or password.'
+                    firebase.auth().signInWithEmailAndPassword(username + "@example.com", password)
+                        .then((userCredential) => {
+                            setCookie("username", username, 1); // Set the cookie for 1 day
+                            setCookie("roles", userData.roles.join(','), 1); // Set the roles cookie
+                            setCookie("tokens", userData.tokens, 1); // Set the tokens cookie
+                            window.location.href = "stats.html"; // Redirect to stats page
+                        })
+                        .catch((error) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Authentication Failed',
+                                text: 'Invalid username or password.'
+                            });
                         });
-                    }
                 }
             } else {
                 Swal.fire({

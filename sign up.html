@@ -225,7 +225,40 @@
         }       </style>
 </head>
 <body style="background-color: #336c4c; overflow: hidden;">
-    <!-- Your existing HTML content here -->
+    <img alt="Blooks Background" class="bg_img">
+    <div class="topBar"></div>
+    <div>
+        <a class="logo_link logo_link1" href="index.html">Anolet</a>
+    </div>
+    <div>
+        <a class="signUp_link" href="login.html">Login</a>
+    </div>
+    <div class="login_container">
+        <div class="loginForm">
+            <div class="login_header">sign up</div>
+            <form onsubmit="event.preventDefault(); createAccount();">
+                <div class="login_username">
+                    <svg aria-hidden="true" class="user_icon" focusable="false" data-prefix="fas" width="22px" height="45" data-icon="user" role="img" viewBox="0 0 448 512">
+                        <path fill="#2e8461" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                    </svg>
+                    <input id="username" type="text" class="login_username_input" placeholder="Username" maxlength="16">
+                </div>
+                <div class="login_password">
+                    <svg aria-hidden="true" class="user_icon" focusable="false" data-prefix="fas" width="22px" height="45" data-icon="user" role="img" viewBox="0 0 448 512">
+                        <path fill="#2e8461" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                    </svg>
+                    <input type="password" id="password" class="login_password_input" placeholder="Password" maxlength="16">
+                </div>
+            </form>
+            <button onclick="createAccount()" type="submit" class="login_submit">Sign up</button>
+            <div class="bottom_login_text">
+                have an account?
+                <a class="logo_link1" href="login.html">Sign in</a> instead.
+            </div>
+        </div>
+        <p id="error-message" style="margin-top: 225px; margin-right: -25px; color: red; border-color: red; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 17px;"></p>
+    </div>
+    <div class="bottom_fade"></div>
     <script>
       // Firebase configuration
       const firebaseConfig = {

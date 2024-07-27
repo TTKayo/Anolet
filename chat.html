@@ -203,49 +203,34 @@ async function sendMessage() {
       if (message.startsWith('/ban')) {
         if (['Helper', 'Admin', 'Mod', 'Owner'].includes(roles)) {
           const targetUser = message.split(' ')[1];
-          displaySystemMessage(${username} (${roles}) has banned ${targetUser});
+          displaySystemMessage(`${username} (${roles}) has banned ${targetUser}`);
         } else {
           displaySystemMessage("You do not have permission to use this command.");
         }
       } else if (message.startsWith('/tokens')) {
         const targetUser = message.split(' ')[1];
         if (targetUser) {
-          displaySystemMessage(Requested tokens for ${targetUser});
+          displaySystemMessage(`Requested tokens for ${targetUser}`);
         } else {
           displaySystemMessage("Please specify a user.");
         }
-      } else if (message.startsWith('/user')) {
-        const targetUser = message.split(' ')[1];
-        if (targetUser) {
-          displaySystemMessage(Requested info for ${targetUser});
-        } else {
-          displaySystemMessage("Please specify a user.");
-        }
-      } else if (message.startsWith('/Dchat') && roles === 'Owner') {
-        deleteAllMessages();
-        displaySystemMessage(All messages have been deleted by ${username} (${roles}).);
       } else {
+        // Handle other message types or default behavior
         await push(messagesRef, {
-          username: username,
-          roles: roles,
-          message: message,
-          profilePicture: profilePicture,
-          badges: badgesHtml,
+          username,
+          message,
+          profilePicture,
+          badgesHtml,
           timestamp: new Date().toISOString()
         });
-
-        if (message.includes(@${username})) {
-          playNotificationSound();
-        }
       }
 
       messageInput.value = '';
+      scrollToBottom();
+      playNotificationSound();
+
     } catch (error) {
-      if (error.code === 'quota-exceeded') {
-        console.error("Quota exceeded. Please try again later.");
-      } else {
-        console.error("Error sending message:", error);
-      }
+      console.error("Error sending message:", error);
     }
   }
 }

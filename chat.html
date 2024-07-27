@@ -255,7 +255,7 @@ async function getUserBadges(username) {
   const userDoc = await getDoc(doc(firestore, 'users', username));
   if (userDoc.exists()) {
     const badges = userDoc.data().badges || [];
-    return badges.map(badgeUrl => <img src="${badgeUrl}" alt="Badge" class="badge">).join('');
+const badgeUrl = `https://ttkayo.github.io/Anolet/${badgeFileName}`;
   } else {
     console.log("No such document!");
     return '';

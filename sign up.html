@@ -9,8 +9,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
-
     <title>Login | Anolet</title>
     <style>
  .topBar {
@@ -314,53 +312,41 @@ function createAccount() {
         return;
     }
 
-    const saltRounds = 10;
-    bcrypt.hash(password, saltRounds, function(err, hash) {
-        if (err) {
+    firebase.auth().createUserWithEmailAndPassword(username + "@example.com", password)
+        .then((userCredential) => {
+            var user = userCredential.user;
+            firestore.collection("users").doc(username).set({
+                badges: [],
+                tokens: 4500,
+                roles: ["Common"],
+                accepted: false,
+                profilePicture: profilePicture,
+                unlockedSkins: [],
+                ban: false,
+                banReason: "",
+                panelAccess: false,
+                showAnimation: true,
+                password: password // Store the password directly
+            }).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account Created',
+                    text: 'Please Sign in Now'
+                }).then(() => {
+                    window.location.href = "login.html"; // Redirect to login page
+                });
+            }).catch((error) => {
+                console.error("Error adding document: ", error);
+            });
+        })
+        .catch((error) => {
+            var errorMessage = error.message;
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Failed to hash password.'
+                text: errorMessage
             });
-            return;
-        }
-
-        firebase.auth().createUserWithEmailAndPassword(username + "@example.com", password)
-            .then((userCredential) => {
-                var user = userCredential.user;
-                firestore.collection("users").doc(username).set({
-                    badges: [],
-                    tokens: 4500,
-                    roles: ["Common"],
-                    accepted: false,
-                    profilePicture: profilePicture,
-                    unlockedSkins: [],
-                    ban: false,
-                    banReason: "",
-                    panelAccess: false,
-                    showAnimation: true,
-                    password: hash // Store the hashed password
-                }).then(() => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Account Created',
-                        text: 'Please Sign in Now'
-                    }).then(() => {
-                        window.location.href = "login.html"; // Redirect to login page
-                    });
-                }).catch((error) => {
-                    console.error("Error adding document: ", error);
-                });
-            })
-            .catch((error) => {
-                var errorMessage = error.message;
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: errorMessage
-                });
-            });
-    });
+        });
 }
 
 function login() {
@@ -378,21 +364,19 @@ function login() {
                         text: 'You are banned for ' + userData.banReason
                     });
                 } else {
-                    // Compare stored hashed password with entered password
-                    bcrypt.compare(password, userData.password, function(err, result) {
-                        if (result) {
-                            setCookie("username", username, 1); // Set the cookie for 1 day
-                            setCookie("roles", userData.roles.join(','), 1); // Set the roles cookie
-                            setCookie("tokens", userData.tokens, 1); // Set the tokens cookie
-                            window.location.href = "stats.html";
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Authentication Failed',
-                                text: 'Invalid username or password.'
-                            });
-                        }
-                    });
+                    // Compare stored password with entered password
+                    if (password === userData.password) {
+                        setCookie("username", username, 1); // Set the cookie for 1 day
+                        setCookie("roles", userData.roles.join(','), 1); // Set the roles cookie
+                        setCookie("tokens", userData.tokens, 1); // Set the tokens cookie
+                        window.location.href = stats.html;
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Authentication Failed',
+                            text: 'Invalid username or password.'
+                        });
+                    }
                 }
             } else {
                 Swal.fire({
@@ -411,6 +395,7 @@ function login() {
             });
         });
 }
+
     </script>
 </body>
 </html>

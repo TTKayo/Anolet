@@ -135,6 +135,7 @@
                  <button style=" display: none;" id="send-button">Send</button>
             <input style="height: 70px; width: 1800px; margin-top: -0px; font-weight: 1000; color: white; margin-left: 210px; background-color: rgb(30, 58, 30); border: none;" type="text" id="message-input" placeholder="Type your message...">        </div>
         <script type="module">
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
@@ -158,8 +159,6 @@ const messagesRef = ref(database, 'messages');
 const chatMessages = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
-
-
 
 function scrollToBottom() {
   chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -214,16 +213,34 @@ async function sendMessage() {
         if (targetUser) {
           displaySystemMessage(`Requested tokens for ${targetUser}`);
         } else {
-          displaySystemMessage("Please specify a user.");
+          displaySystemMessage("Please specify a target user.");
         }
       } else {
-        // Handle other messages here
+        // Handle regular messages
+        await push(messagesRef, {
+          username,
+          message,
+          profilePicture,
+          badgesHtml,
+          timestamp: Date.now()
+        });
+        messageInput.value = '';
+        scrollToBottom();
+        playNotificationSound();
       }
     } catch (error) {
       console.error("Error sending message:", error);
     }
   }
 }
+
+sendButton.addEventListener('click', sendMessage);
+messageInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
+});
+</script>
 
 
 

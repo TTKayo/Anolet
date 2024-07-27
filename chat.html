@@ -159,8 +159,19 @@ const chatMessages = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
 
+
+
+function scrollToBottom() {
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function playNotificationSound() {
+  const audio = new Audio('Pinging.mp3');
+  audio.play();
+}
+
 function getCookie(cookieName) {
-  const name = ${cookieName}=;
+  const name = `${cookieName}=`;
   const decodedCookie = decodeURIComponent(document.cookie);
   const cookieArray = decodedCookie.split(';');
   for(let i = 0; i < cookieArray.length; i++) {
@@ -173,15 +184,6 @@ function getCookie(cookieName) {
     }
   }
   return '';
-}
-
-function scrollToBottom() {
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-function playNotificationSound() {
-  const audio = new Audio('Pinging.mp3');
-  audio.play();
 }
 
 async function sendMessage() {
@@ -215,20 +217,8 @@ async function sendMessage() {
           displaySystemMessage("Please specify a user.");
         }
       } else {
-        // Handle other message types or default behavior
-        await push(messagesRef, {
-          username,
-          message,
-          profilePicture,
-          badgesHtml,
-          timestamp: new Date().toISOString()
-        });
+        // Handle other messages here
       }
-
-      messageInput.value = '';
-      scrollToBottom();
-      playNotificationSound();
-
     } catch (error) {
       console.error("Error sending message:", error);
     }

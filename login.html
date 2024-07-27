@@ -355,58 +355,59 @@
                 });
         }
 
-async function login() {
+function login() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
 
-    try {
-        const doc = await firestore.collection("users").doc(username).get();
-        if (doc.exists) {
-            const userData = doc.data();
-            if (userData.ban) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Banned',
-                    text: 'You are banned for ' + userData.banReason
-                });
-            } else if (!userData.accepted) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Account Not Accepted',
-                    text: 'Your account is awaiting approval.'
-                });
-            } else {
-                // Compare stored password with entered password
-                if (password === userData.password) {
-                    setCookie("username", username, 1); // Set the cookie for 1 day
-                    setCookie("roles", userData.roles.join(','), 1); // Set the roles cookie
-                    setCookie("tokens", userData.tokens, 1); // Set the tokens cookie
-                    window.location.href = `stats.html`;
-                } else {
+    firestore.collection("users").doc(username).get()
+        .then((doc) => {
+            if (doc.exists) {
+                const userData = doc.data();
+                if (userData.ban) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Authentication Failed',
-                        text: 'Invalid username or password.'
+                        title: 'Banned',
+                        text: 'You are banned for ' + userData.banReason
                     });
+                } else if (!userData.accepted) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Not Accepted',
+                        text: 'Your account is not yet accepted by an admin.'
+                    });
+                } else {
+                    firebase.auth().signInWithEmailAndPassword(username + "@example.com", password)
+                        .then((userCredential) => {
+                            setCookie("username", username, 1); // Set the cookie for 1 day
+                            setCookie("roles", userData.roles.join(','), 1); // Set the roles cookie
+                            setCookie("tokens", userData.tokens, 1); // Set the tokens cookie
+                            window.location.href = "stats.html"; // Redirect to stats page
+                        })
+                        .catch((error) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Authentication Failed',
+                                text: 'Invalid username or password.'
+                            });
+                        });
                 }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'User Not Found',
+                    text: 'User does not exist.'
+                });
             }
-        } else {
+        })
+        .catch((error) => {
+            console.error("Error getting document:", error);
             Swal.fire({
                 icon: 'error',
-                title: 'User Not Found',
-                text: 'User does not exist.'
+                title: 'Error',
+                text: 'Failed to retrieve user data. Please try again later.'
             });
-        }
-    } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to retrieve user data. Please try again later.'
         });
-    }
 }
-
-
     </script>
 </body>
 </html>

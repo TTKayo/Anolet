@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
-    <title>Login | Anolet</title>
+    <title>Sign Up | Anolet</title>
     <style>
 .topBar {
             position: absolute;
@@ -223,167 +222,134 @@
             width: 50px;
             height: 50px;
             margin: 0 5px;
-        }         </style>
+        }       </style>
 </head>
 <body style="background-color: #336c4c; overflow: hidden;">
-    <img alt="Blooks Background" class="bg_img">
-    <div class="topBar"></div>
-    <div>
-        <a class="logo_link logo_link1" href="index.html">Anolet</a>
-    </div>
-    <div>
-        <a class="signUp_link" href="login.html">Login</a>
-    </div>
-    <div class="login_container">
-        <div class="loginForm">
-            <div class="login_header">sign up</div>
-            <form onsubmit="event.preventDefault(); createAccount();">
-                <div class="login_username">
-                    <svg aria-hidden="true" class="user_icon" focusable="false" data-prefix="fas" width="22px" height="45" data-icon="user" role="img" viewBox="0 0 448 512">
-                        <path fill="#2e8461" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
-                    </svg>
-                    <input id="username" type="text" class="login_username_input" placeholder="Username" maxlength="16">
-                </div>
-                <div class="login_password">
-                    <svg aria-hidden="true" class="user_icon" focusable="false" data-prefix="fas" width="22px" height="45" data-icon="user" role="img" viewBox="0 0 448 512">
-                        <path fill="#2e8461" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
-                    </svg>
-                    <input type="password" id="password" class="login_password_input" placeholder="Password" maxlength="16">
-                </div>
-            </form>
-            <button onclick="createAccount()" type="submit" class="login_submit">Sign up</button>
-            <div class="bottom_login_text">
-                have an account?
-                <a class="logo_link1" href="login.html">Sign in</a> instead.
-            </div>
-        </div>
-        <p id="error-message" style="margin-top: 225px; margin-right: -25px; color: red; border-color: red; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 17px;"></p>
-    </div>
-    <div class="bottom_fade"></div>
+    <!-- Your existing HTML content here -->
     <script>
       // Firebase configuration
-  const firebaseConfig = {
-      apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
-      authDomain: "cosmik-7c124.firebaseapp.com",
-      databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
-      projectId: "cosmik-7c124",
-      storageBucket: "cosmik-7c124.appspot.com",
-      messagingSenderId: "412506429662",
-      appId: "1:412506429662:web:9ca3e17199297df7384a4f",
-      measurementId: "G-R7K0LTHCK3"
-  };
+      const firebaseConfig = {
+          apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
+          authDomain: "cosmik-7c124.firebaseapp.com",
+          databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
+          projectId: "cosmik-7c124",
+          storageBucket: "cosmik-7c124.appspot.com",
+          messagingSenderId: "412506429662",
+          appId: "1:412506429662:web:9ca3e17199297df7384a4f",
+          measurementId: "G-R7K0LTHCK3"
+      };
 
-  firebase.initializeApp(firebaseConfig);
-  const firestore = firebase.firestore();
+      firebase.initializeApp(firebaseConfig);
+      const firestore = firebase.firestore();
 
-  function setCookie(name, value, days) {
-      const d = new Date();
-      d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-      const expires = "expires=" + d.toUTCString();
-      document.cookie = name + "=" + value + ";" + expires + ";path=/";
-  }
-
-  function getCookie(name) {
-      const cname = name + "=";
-      const decodedCookie = decodeURIComponent(document.cookie);
-      const ca = decodedCookie.split(';');
-      for (let i = 0; i < ca.length; i++) {
-          let c = ca[i];
-          while (c.charAt(0) == ' ') {
-              c = c.substring(1);
-          }
-          if (c.indexOf(cname) == 0) {
-              return c.substring(cname.length, c.length);
-          }
-      }
-      return "";
-  }
-
-  function createAccount() {
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      const profilePicture = "Cosmik.webp";
-
-      if (/[^a-zA-Z0-9]/.test(username)) {
-          Swal.fire({
-              icon: 'error',
-              title: 'Invalid Username',
-              text: 'Username can only contain letters and numbers.'
-          });
-          return;
+      function setCookie(name, value, days) {
+          const d = new Date();
+          d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+          const expires = "expires=" + d.toUTCString();
+          document.cookie = name + "=" + value + ";" + expires + ";path=/";
       }
 
-      bcrypt.hash(password, 10, function(err, hashedPassword) {
-          if (err) {
+      function getCookie(name) {
+          const cname = name + "=";
+          const decodedCookie = decodeURIComponent(document.cookie);
+          const ca = decodedCookie.split(';');
+          for (let i = 0; i < ca.length; i++) {
+              let c = ca[i];
+              while (c.charAt(0) == ' ') {
+                  c = c.substring(1);
+              }
+              if (c.indexOf(cname) == 0) {
+                  return c.substring(cname.length, c.length);
+              }
+          }
+          return "";
+      }
+
+      function createAccount() {
+          const username = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
+          const profilePicture = "Cosmik.webp";
+
+          if (/[^a-zA-Z0-9]/.test(username)) {
               Swal.fire({
                   icon: 'error',
-                  title: 'Error',
-                  text: 'Failed to hash password.'
+                  title: 'Invalid Username',
+                  text: 'Username can only contain letters and numbers.'
               });
               return;
           }
 
-          firestore.collection("users").doc(username).set({
-              badges: [],
-              tokens: 4500,
-              roles: ["Common"],
-              accepted: false, // Initially set to false
-              profilePicture: profilePicture,
-              unlockedSkins: [],
-              ban: false,
-              banReason: "",
-              panelAccess: false,
-              showAnimation: true,
-              password: hashedPassword // Store the hashed password
-          }).then(() => {
-              Swal.fire({
-                  icon: 'success',
-                  title: 'Account Created',
-                  text: 'Please wait for account approval.'
-              }).then(() => {
-                  window.location.href = "login.html"; // Redirect to login page
-              });
-          }).catch((error) => {
-              console.error("Error adding document: ", error);
-          });
-      });
-  }
-
-  function login() {
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-
-      if (!username || !password) {
-          document.getElementById("error-message").textContent = "Please enter both username and password.";
-          return;
-      }
-
-      firestore.collection("users").doc(username).get().then((doc) => {
-          if (doc.exists) {
-              const user = doc.data();
-              if (!user.accepted) {
-                  document.getElementById("error-message").textContent = "Account not accepted yet.";
+          bcrypt.hash(password, 10, function(err, hashedPassword) {
+              if (err) {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: 'Failed to hash password.'
+                  });
                   return;
               }
-              bcrypt.compare(password, user.password, function(err, result) {
-                  if (result) {
-                      setCookie("username", username, 30);
-                      window.location.href = "dashboard.html"; // Redirect to dashboard page after successful login
-                  } else {
-                      document.getElementById("error-message").textContent = "Invalid password.";
-                  }
-              });
-          } else {
-              document.getElementById("error-message").textContent = "Username does not exist.";
-          }
-      }).catch((error) => {
-          console.error("Error getting document: ", error);
-      });
-  }
 
-  window.onload = function() {
-    // Any onload functionality
-  }
+              firestore.collection("users").doc(username).set({
+                  badges: [],
+                  tokens: 4500,
+                  roles: ["Common"],
+                  accepted: false, // Initially set to false
+                  profilePicture: profilePicture,
+                  unlockedSkins: [],
+                  ban: false,
+                  banReason: "",
+                  panelAccess: false,
+                  showAnimation: true,
+                  password: hashedPassword // Store the hashed password
+              }).then(() => {
+                  Swal.fire({
+                      icon: 'success',
+                      title: 'Account Created',
+                      text: 'Please wait for account approval.'
+                  }).then(() => {
+                      window.location.href = "login.html"; // Redirect to login page
+                  });
+              }).catch((error) => {
+                  console.error("Error adding document: ", error);
+              });
+          });
+      }
+
+      function login() {
+          const username = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
+
+          if (!username || !password) {
+              document.getElementById("error-message").textContent = "Please enter both username and password.";
+              return;
+          }
+
+          firestore.collection("users").doc(username).get().then((doc) => {
+              if (doc.exists) {
+                  const user = doc.data();
+                  if (!user.accepted) {
+                      document.getElementById("error-message").textContent = "Account not accepted yet.";
+                      return;
+                  }
+                  bcrypt.compare(password, user.password, function(err, result) {
+                      if (result) {
+                          setCookie("username", username, 30);
+                          window.location.href = "dashboard.html"; // Redirect to dashboard page after successful login
+                      } else {
+                          document.getElementById("error-message").textContent = "Invalid password.";
+                      }
+                  });
+              } else {
+                  document.getElementById("error-message").textContent = "Username does not exist.";
+              }
+          }).catch((error) => {
+              console.error("Error getting document: ", error);
+          });
+      }
+
+      window.onload = function() {
+        // Any onload functionality
+      }
     </script>
 </body>
 </html>

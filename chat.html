@@ -138,7 +138,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
   authDomain: "cosmik-7c124.firebaseapp.com",
@@ -149,25 +148,13 @@ const firebaseConfig = {
   appId: "1:412506429662:web:9ca3e17199297df7384a4f",
   measurementId: "G-R7K0LTHCK3"
 };
-
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const firestore = getFirestore(app);
 const messagesRef = ref(database, 'messages');
-
 const chatMessages = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
-
-function scrollToBottom() {
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-function playNotificationSound() {
-  const audio = new Audio('Pinging.mp3');
-  audio.play();
-}
-
 function getCookie(cookieName) {
   const name = `${cookieName}=`;
   const decodedCookie = decodeURIComponent(document.cookie);
@@ -183,23 +170,26 @@ function getCookie(cookieName) {
   }
   return '';
 }
-
+function scrollToBottom() {
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+function playNotificationSound() {
+  const audio = new Audio('Pinging.mp3');
+  audio.play();
+}
 async function sendMessage() {
   const message = messageInput.value.trim();
   if (message !== '') {
     try {
       const username = getCookie('username');
       const roles = getCookie('roles');
-
       if (!username || !roles) {
         console.error("Username or roles not found in cookies.");
         return;
       }
-
       const userDoc = await getDoc(doc(firestore, 'users', username));
       const profilePicture = userDoc.exists() ? userDoc.data().profilePicture : '';
       const badgesHtml = await getUserBadges(username);
-
       if (message.startsWith('/ban')) {
         if (['Helper', 'Admin', 'Mod', 'Owner'].includes(roles)) {
           const targetUser = message.split(' ')[1];
@@ -212,37 +202,43 @@ async function sendMessage() {
         if (targetUser) {
           displaySystemMessage(`Requested tokens for ${targetUser}`);
         } else {
-          displaySystemMessage("Please specify a target user.");
+          displaySystemMessage("Please specify a user.");
         }
+      } else if (message.startsWith('/user')) {
+        const targetUser = message.split(' ')[1];
+        if (targetUser) {
+          displaySystemMessage(`Requested info for ${targetUser}`);
+        } else {
+          displaySystemMessage("Please specify a user.");
+        }
+      } else if (message.startsWith('/Dchat') && roles === 'Owner') {
+        deleteAllMessages();
+        displaySystemMessage(`All messages have been deleted by ${username} (${roles}).`);
       } else {
-        // Handle regular messages
         await push(messagesRef, {
-          username,
-          message,
-          profilePicture,
-          badgesHtml,
-          timestamp: Date.now()
+          username: username,
+          roles: roles,
+          message: message,
+          profilePicture: profilePicture,
+          badges: badgesHtml,
+          timestamp: new Date().toISOString()
         });
-        messageInput.value = '';
-        scrollToBottom();
-        playNotificationSound();
+
+        if (message.includes(`@${username}`)) {
+          playNotificationSound();
+        }
       }
+
+      messageInput.value = '';
     } catch (error) {
-      console.error("Error sending message:", error);
+      if (error.code === 'quota-exceeded') {
+        console.error("Quota exceeded. Please try again later.");
+      } else {
+        console.error("Error sending message:", error);
+      }
     }
   }
 }
-
-sendButton.addEventListener('click', sendMessage);
-messageInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    sendMessage();
-  }
-});
-
-
-
-
 function displaySystemMessage(message) {
   const systemMessageDiv = document.createElement('div');
   systemMessageDiv.textContent = message;
@@ -250,50 +246,43 @@ function displaySystemMessage(message) {
   chatMessages.appendChild(systemMessageDiv);
   scrollToBottom();
 }
-
 async function getUserBadges(username) {
   const userDoc = await getDoc(doc(firestore, 'users', username));
   if (userDoc.exists()) {
     const badges = userDoc.data().badges || [];
-const badgeUrl = `https://ttkayo.github.io/Anolet/${badgeFileName}`;
+    return badges.map(badgeUrl => `<img src="${badgeUrl}" alt="Badge" class="badge">`).join('');
   } else {
     console.log("No such document!");
     return '';
   }
 }
-
-
-
+function generateRainbowText(text) {
+  return `<span class="rainbow-text">${text}</span>`;
+}
 sendButton.addEventListener('click', sendMessage);
 messageInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     sendMessage();
   }
 });
-
 function displayMessage(messageData) {
   const messageDiv = document.createElement('div');
   messageDiv.style.display = 'flex';
   messageDiv.style.alignItems = 'center';
-
   const profileImg = document.createElement('img');
   profileImg.src = messageData.profilePicture || 'default_profile_picture_url';
-  profileImg.alt = ${messageData.username}'s profile picture;
+  profileImg.alt = `${messageData.username}'s profile picture`;
   profileImg.style.width = '65px';
   profileImg.style.height = '70px';
   profileImg.style.marginRight = '10px';
-
   const messageText = document.createElement('div');
   const usernameHtml = messageData.roles === 'Owner' ? generateRainbowText(messageData.username) : messageData.username;
-  messageText.innerHTML = ${usernameHtml} (${messageData.roles}): ${messageData.message} ${messageData.badges};
-
+  messageText.innerHTML = `${usernameHtml} (${messageData.roles}): ${messageData.message} ${messageData.badges}`;
   messageDiv.appendChild(profileImg);
   messageDiv.appendChild(messageText);
-
   chatMessages.appendChild(messageDiv);
   scrollToBottom();
 }
-
 function deleteAllMessages() {
   remove(messagesRef)
     .then(() => {
@@ -304,12 +293,10 @@ function deleteAllMessages() {
       console.error('Error deleting messages:', error);
     });
 }
-
 onChildAdded(messagesRef, (snapshot) => {
   const messageData = snapshot.val();
   displayMessage(messageData);
 });
-
 
 </script>
 

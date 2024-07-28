@@ -358,56 +358,58 @@ function createAccount() {
         });
 }
 
-function login() {
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-    firebase.auth().signInWithEmailAndPassword(username, password)
-        .then((userCredential) => {
-            var user = userCredential.user;
-            var db = firebase.firestore();
-            var userDocRef = db.collection("users").doc(user.uid);
 
-            userDocRef.get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        var profilePicture = doc.data().profilePicture;
-                        var badges = doc.data().badges || [];
+        function login() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            var email = username + "@example.com"; // Use username as email for Firebase auth
 
-                        document.cookie = "username=" + username + "; path=/";
-                        document.cookie = "profilePicture=" + profilePicture + "; path=/";
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    var user = userCredential.user;
+                    var userDocRef = firestore.collection("users").doc(username);
 
-                        var badgesString = badges.join(',');
-                        document.cookie = "badges=" + badgesString + "; path=/";
+                    userDocRef.get()
+                        .then((doc) => {
+                            if (doc.exists) {
+                                var profilePicture = doc.data().profilePicture;
+                                var badges = doc.data().badges || [];
 
-                        window.location.href = "profile.html";
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'No such document!'
+                                setCookie("username", username, 7); // Save username in cookie
+                                setCookie("profilePicture", profilePicture, 7); // Save profile picture in cookie
+
+                                var badgesString = badges.join(',');
+                                setCookie("badges", badgesString, 7); // Save badges in cookie
+
+                                window.location.href = "profile.html";
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'No such document!'
+                                });
+                            }
+                        })
+                        .catch((error) => {
+                            console.log("Error getting document:", error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Error getting document: ' + error.message
+                            });
                         });
-                    }
                 })
                 .catch((error) => {
-                    console.log("Error getting document:", error);
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    console.log(errorCode, errorMessage);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Error getting document: ' + error.message
+                        text: 'Error logging in: ' + errorMessage
                     });
                 });
-        })
-        .catch((error) => {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            console.log(errorCode, errorMessage);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Error logging in: ' + errorMessage
-            });
-        });
-}
+        }
 
     </script>
 </body>

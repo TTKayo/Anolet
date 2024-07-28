@@ -361,55 +361,50 @@ function createAccount() {
 function login() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
+    firebase.auth().signInWithEmailAndPassword(username, password)
+        .then((userCredential) => {
+            var user = userCredential.user;
+            var db = firebase.firestore();
+            var userDocRef = db.collection("users").doc(user.uid);
 
-    firestore.collection("users").doc(username).get()
-        .then((doc) => {
-            if (doc.exists) {
-                const userData = doc.data();
-                if (userData.ban) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Banned',
-                        text: 'You are banned for ' + userData.banReason
-                    });
-                } else if (!userData.accepted) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Not Accepted',
-                        text: 'Your account is not yet accepted by an admin.'
-                    });
-                } else {
-                    firebase.auth().signInWithEmailAndPassword(username + "@example.com", password)
-                        .then((userCredential) => {
-                            setCookie("username", username, 1); // Set the cookie for 1 day
-                            setCookie("roles", userData.roles.join(','), 1); // Set the roles cookie
-                            setCookie("tokens", userData.tokens, 1); // Set the tokens cookie
-                            setCookie("profilePicture", userData.profilePicture, 1); // Set the profile picture cookie
-                            setCookie("badges", JSON.stringify(userData.badges), 1); // Set the badges cookie
-                            window.location.href = "profile.html"; // Redirect to profile page
-                        })
-                        .catch((error) => {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Authentication Failed',
-                                text: 'Invalid username or password.'
-                            });
+            userDocRef.get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        var profilePicture = doc.data().profilePicture;
+                        var badges = doc.data().badges || [];
+
+                        document.cookie = "username=" + username + "; path=/";
+                        document.cookie = "profilePicture=" + profilePicture + "; path=/";
+
+                        var badgesString = badges.join(',');
+                        document.cookie = "badges=" + badgesString + "; path=/";
+
+                        window.location.href = "profile.html";
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No such document!'
                         });
-                }
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'User Not Found',
-                    text: 'User does not exist.'
+                    }
+                })
+                .catch((error) => {
+                    console.log("Error getting document:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error getting document: ' + error.message
+                    });
                 });
-            }
         })
         .catch((error) => {
-            console.error("Error getting document:", error);
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log(errorCode, errorMessage);
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Failed to retrieve user data. Please try again later.'
+                text: 'Error logging in: ' + errorMessage
             });
         });
 }

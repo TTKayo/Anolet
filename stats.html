@@ -422,8 +422,20 @@ usernameElement.style.marginRight = "auto";
             }
             return false;
         }
+  window.onload = function() {
+            const profilePicture = getCookie("profilePicture");
+            const badges = JSON.parse(getCookie("badges"));
 
-        // Get roles from cookies (assuming roles are stored as a comma-separated string in a cookie named 'roles')
+            document.getElementById("profile-picture").src = profilePicture;
+
+            const badgesContainer = document.getElementById("badges");
+            badges.forEach(badge => {
+                const badgeImg = document.createElement("img");
+                badgeImg.src = badge;
+                badgeImg.className = "badge";
+                badgesContainer.appendChild(badgeImg);
+            });
+        }
         let rolesCookie = getCookie('roles');
         if (rolesCookie) {
             let userRoles = rolesCookie.split(',');

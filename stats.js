@@ -1,47 +1,3 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.9.1/firebase-firestore.js";
-
-// Firebase configuration
-const firebaseConfig = {
-   apiKey: "AIzaSyCOIKlP9YhtX9xa5aoggmsrWwavlW-XuzI",
-  authDomain: "cosmik-7c124.firebaseapp.com",
-  databaseURL: "https://cosmik-7c124-default-rtdb.firebaseio.com",
-  projectId: "cosmik-7c124",
-  storageBucket: "cosmik-7c124.appspot.com",
-  messagingSenderId: "412506429662",
-  appId: "1:412506429662:web:9ca3e17199297df7384a4f",
-  measurementId: "G-R7K0LTHCK3"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const firestore = getFirestore(app);
-
-// Function to get a cookie by name
-function getCookie(name) {
-    const cname = name + "=";
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const ca = decodedCookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(cname) == 0) {
-            return c.substring(cname.length, c.length);
-        }
-    }
-    return "";
-}
-
-// Function to set a cookie
-function setCookie(name, value, days) {
-    const d = new Date();
-    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-    const expires = "expires=" + d.toUTCString();
-    document.cookie = name + "=" + value + ";" + expires + ";path=/";
-}
-
 // Function to buy a chest
 function buyChest() {
     const username = getCookie("username");
@@ -122,17 +78,21 @@ function unlockImages(username) {
 // Function to display unlocked images
 function displayUnlockedImages(images) {
     const container = document.getElementById('unlocked-images');
-    container.innerHTML = '';
+    if (container) {
+        container.innerHTML = '';
 
-    images.forEach(function(imageSrc) {
-        const imgElement = document.createElement('img');
-        imgElement.src = imageSrc;
-        imgElement.classList.add('badge');
-        imgElement.addEventListener('click', function() {
-            updateProfilePicture(imageSrc);
+        images.forEach(function(imageSrc) {
+            const imgElement = document.createElement('img');
+            imgElement.src = imageSrc;
+            imgElement.classList.add('badge');
+            imgElement.addEventListener('click', function() {
+                updateProfilePicture(imageSrc);
+            });
+            container.appendChild(imgElement);
         });
-        container.appendChild(imgElement);
-    });
+    } else {
+        console.error("Container for unlocked images not found.");
+    }
 }
 
 // Function to update profile picture
@@ -196,16 +156,15 @@ function displayStats() {
     const tokens = getCookie("tokens");
 
     const usernameElement = document.getElementById("username");
-    usernameElement.innerText = username;
-
     const rolesElement = document.getElementById("roles");
-    rolesElement.innerText = roles;
-
     const tokensElement = document.getElementById("tokens");
-    tokensElement.innerText = tokens;
+
+    if (usernameElement) usernameElement.innerText = username;
+    if (rolesElement) rolesElement.innerText = roles;
+    if (tokensElement) tokensElement.innerText = tokens;
 
     // Check if the role is "Owner" and apply rainbow animation
-    if (roles === "Owner") {
+    if (roles === "Owner" && usernameElement) {
         usernameElement.classList.add("rainbow-text");
     }
 }
@@ -277,10 +236,10 @@ async function fetchBadges() {
                     const badgeImg = document.createElement("img");
                     badgeImg.src = badgeUrl;
                     badgeDiv.appendChild(badgeImg);
-                    badgeContainer.appendChild(badgeDiv);
+                    if (badgeContainer) badgeContainer.appendChild(badgeDiv);
                 });
             } else {
-                noBadgesMessage.style.display = "block";
+                if (noBadgesMessage) noBadgesMessage.style.display = "block";
             }
         } else {
             console.error("User document not found.");
@@ -296,16 +255,26 @@ function initializePage() {
     displayStats();
     checkAccountStatus();
     fetchBadges();
+
+    const buyChestButton = document.getElementById("buyChestButton");
+    if (buyChestButton) {
+        buyChestButton.addEventListener("click", buyChest);
+    } else {
+        console.error("Element with ID 'buyChestButton' not found.");
+    }
+
+    const updateProfilePictureButton = document.getElementById("updateProfilePictureButton");
+    if (updateProfilePictureButton) {
+        updateProfilePictureButton.addEventListener("click", function() {
+            const imageSrc = document.getElementById("newProfilePicture").value;
+            updateProfilePicture(imageSrc);
+        });
+    } else {
+        console.error("Element with ID 'updateProfilePictureButton' not found.");
+    }
 }
 
 // Call initializePage() when the page is loaded
 window.onload = function() {
     initializePage();
 };
-
-// Example usage: Add event listeners to buttons or elements in your HTML
-document.getElementById("buyChestButton").addEventListener("click", buyChest);
-document.getElementById("updateProfilePictureButton").addEventListener("click", function() {
-    const imageSrc = document.getElementById("newProfilePicture").value;
-    updateProfilePicture(imageSrc);
-});
